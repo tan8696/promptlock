@@ -48,6 +48,10 @@ class Config:
     break_margin: float = 0.2
     judge_enabled: bool = True
     confirm_reruns: bool = True
+    # Model id and sampling parameters are part of the system under test, so
+    # they are part of the fingerprint. Swapping a model is a change like any
+    # prompt edit, and this is what makes it visible.
+    model_params: dict = field(default_factory=dict)
     assertions: dict = field(default_factory=dict)
 
     @classmethod
@@ -83,7 +87,7 @@ def _run_case(provider, prompt: str, k: int, offset: int = 0) -> list[dict]:
 
 def run_suite(cfg: Config) -> dict:
     render, mod = _import_target(cfg.target)
-    provider = get_provider(cfg.provider)
+    provider = get_provider(cfg.provider, cfg.model_params)
 
     results = {}
     for case in load_cases(cfg.cases):
@@ -95,9 +99,14 @@ def run_suite(cfg: Config) -> dict:
         }
 
     return {
-        "fingerprint": fingerprint(getattr(mod, "PROMPT", ""), provider.name, {"k": cfg.runs_per_case}),
+        "fingerprint": fingerprint(
+            getattr(mod, "PROMPT", ""),
+            provider.name,
+            {"k": cfg.runs_per_case, **cfg.model_params},
+        ),
         "provider": provider.name,
         "runs_per_case": cfg.runs_per_case,
+        "model_params": dict(cfg.model_params),
         "cases": results,
     }
 
@@ -134,17 +143,23 @@ def _broken(old_rates: dict, new_counts: dict[str, tuple[int, int]], cfg: Config
 
 def check(cfg: Config, baseline: dict) -> dict:
     current = run_suite(cfg)
-    provider = get_provider(cfg.provider)
+    provider = get_provider(cfg.provider, cfg.model_params)
     judge = judge_mod.get_judge(provider, cfg.judge_enabled)
     k = cfg.runs_per_case
 
     report = {
         "fingerprint_changed": current["fingerprint"] != baseline.get("fingerprint"),
+        "params": {
+            "baseline": baseline.get("model_params", {}),
+            "current": current.get("model_params", {}),
+        },
         "cases": {},
         "summary": {PASS: 0, DRIFT: 0, FAIL: 0},
         "judge_calls": 0,
         "confirm_reruns": 0,
     }
+
+    spend = {"baseline": 0.0, "baseline_runs": 0, "current": 0.0, "current_runs": 0}
 
     for cid, new in current["cases"].items():
         old = baseline["cases"].get(cid)
@@ -178,6 +193,11 @@ def check(cfg: Config, baseline: dict) -> dict:
                 report["judge_calls"] += 2
             verdict = FAIL if judge_verdict == "worse" else DRIFT
 
+        spend["baseline"] += sum(r["cost_usd"] for r in old["runs"])
+        spend["baseline_runs"] += len(old["runs"])
+        spend["current"] += sum(r["cost_usd"] for r in runs)
+        spend["current_runs"] += len(runs)
+
         report["summary"][verdict] += 1
         report["cases"][cid] = {
             "verdict": verdict,
@@ -192,6 +212,14 @@ def check(cfg: Config, baseline: dict) -> dict:
             "prompt": new["prompt"],
             "hint": new.get("hint"),
         }
+
+    # Per-run, not per-suite: a model swap changes unit cost, and the confirmation
+    # re-runs mean the two sides do not have the same number of calls.
+    report["cost"] = {
+        "baseline_per_run": spend["baseline"] / max(1, spend["baseline_runs"]),
+        "current_per_run": spend["current"] / max(1, spend["current_runs"]),
+        "current_total": round(spend["current"], 6),
+    }
 
     _detect_systemic_drift(report, cfg, judge)
     for c in report["cases"].values():

@@ -10,6 +10,48 @@ def _trim(s: str, n: int = 160) -> str:
     return s if len(s) <= n else s[: n - 1] + "…"
 
 
+def _param_changes(report: dict) -> list[tuple[str, str, str]]:
+    """(name, before, after) for every model parameter that moved."""
+    params = report.get("params", {})
+    old, new = params.get("baseline") or {}, params.get("current") or {}
+    return [
+        (key, str(old.get(key, "—")), str(new.get(key, "—")))
+        for key in sorted(set(old) | set(new))
+        if old.get(key) != new.get(key)
+    ]
+
+
+def _cost_delta(report: dict) -> str | None:
+    cost = report.get("cost") or {}
+    before, after = cost.get("baseline_per_run"), cost.get("current_per_run")
+    if not before or after is None:
+        return None
+    pct = (after - before) / before * 100
+    if abs(pct) < 0.5:
+        return None
+    return f"${before:.6f} → ${after:.6f} per run ({pct:+.0f}%)"
+
+
+def _what_changed(report: dict) -> list[str]:
+    """Name the change, not just the fact of one. A fingerprint hash helps nobody."""
+    if not report.get("fingerprint_changed"):
+        return []
+
+    rows = _param_changes(report)
+    cost = _cost_delta(report)
+    if not rows and not cost:
+        return ["> ⚠️ **The prompt fingerprint changed** — the template itself was edited.", ""]
+
+    out = ["> ⚠️ **What changed**", ">"]
+    for name, before, after in rows:
+        out.append(f"> - `{name}`: `{before}` → `{after}`")
+    if cost:
+        out.append(f"> - cost: {cost}")
+    if not rows:
+        out.append("> - the prompt template was edited")
+    return out + [""]
+
+
 def markdown(report: dict) -> str:
     s = report["summary"]
     total = sum(s.values())
@@ -29,6 +71,8 @@ def markdown(report: dict) -> str:
         + ("  ·  ⚠️ prompt fingerprint changed" if report["fingerprint_changed"] else ""),
         "",
     ]
+
+    out += _what_changed(report)
 
     sd = report.get("suite_drift", {})
     if sd.get("systemic"):

@@ -7,6 +7,14 @@ cases: examples/demo_app/cases.yaml
 runs_per_case: 5
 provider: mock
 
+# Part of the fingerprint. Changing any of these is a change to the system under
+# test -- a cost-driven model downgrade is a prompt regression by another name.
+model_params:
+  model: claude-sonnet-4-6
+  temperature: 0.0
+  top_p: 1.0
+  max_tokens: 1000
+
 # Drift must exceed max(drift_floor, case_noise_floor * drift_multiplier).
 drift_floor: 0.12
 drift_multiplier: 1.5

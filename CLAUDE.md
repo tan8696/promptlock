@@ -32,8 +32,9 @@ change under `promptlock/`, run it:
 python3 scripts/benchmark.py
 ```
 
-It replays 6 prompt edits that genuinely degrade output and 10 a reviewer would
-wave through, against 50 cases each.
+It replays 19 variants against 50 cases each: 6 prompt edits that genuinely
+degrade output, 10 a reviewer would wave through, and 3 model/parameter changes
+(`MODEL_SWAP`, scored separately — M2 is expected to stay quiet).
 
 **Recall must stay 6/6. False positives must not exceed 1/10.**
 
@@ -85,7 +86,8 @@ promptlock/
   runner.py         verdict engine — owns run_suite/record/check, noise floors,
                     confirmation re-runs, the Wilson break rule, suite-level
                     systemic drift, and the Config dataclass (every tunable lives here)
-  providers.py      MockProvider (behavioural simulator, seeded) + AnthropicProvider
+  providers.py      MockProvider (behavioural simulator, seeded on prompt+run+model)
+                    + AnthropicProvider. Owns model-tier behaviour and PRICE_BY_MODEL
   store.py          baseline save/load + prompt fingerprint
   report.py         markdown (PR comment) + console rendering
   scorers/

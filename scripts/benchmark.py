@@ -14,6 +14,7 @@ import os
 import shutil
 import sys
 import tempfile
+from dataclasses import replace
 
 sys.path.insert(0, os.getcwd())
 
@@ -55,11 +56,35 @@ HARMLESS = {
 }
 
 
+# Changes to the model, not the prompt. No file is patched -- only Config --
+# because this is the regression that ships as a config edit nobody reads.
+MODEL_SWAP = {
+    "M1 sonnet->haiku": ({"model": "claude-haiku-4-5"}, True),
+    "M2 temperature 0->0.2": ({"temperature": 0.2}, False),
+    # 24, not 64: this suite's longest completion is 36 tokens, so a 64-token
+    # cap truncates nothing and the variant would test nothing. 24 clips 42 of
+    # the 50 cases mid-JSON, which is the regression this variant is for.
+    "M3 max_tokens 1000->24": ({"max_tokens": 24}, True),
+}
+
+
 def patch(old: str, new: str) -> None:
     shutil.copy(BACKUP, APP)
     s = open(APP).read()
     assert old in s, f"anchor not found: {old!r}"
     open(APP, "w").write(s.replace(old, new, 1))
+
+
+def tier_of(rep: dict, fired: bool) -> str:
+    """Which signal caught it -- assertions are free, the judge is not."""
+    if any(
+        c["verdict"] == "FAIL"
+        and c["broken_assertions"]
+        and "systemic" not in c["broken_assertions"][0]
+        for c in rep["cases"].values()
+    ):
+        return "assertions"
+    return "judge" if fired else "—"
 
 
 def naive_fires(cfg: Config, baseline: dict) -> bool:
@@ -97,23 +122,25 @@ def main() -> None:
                 importlib.invalidate_caches()
                 patch(old, new)
                 nv = naive_fires(cfg, baseline)
-                tier = (
-                    "assertions"
-                    if any(
-                        c["verdict"] == "FAIL" and c["broken_assertions"]
-                        and "systemic" not in c["broken_assertions"][0]
-                        for c in rep["cases"].values()
-                    )
-                    else "judge" if pl else "—"
-                )
-                rows.append((kind, name, pl, nv, rep["summary"], tier))
+                rows.append((kind, name, pl, nv, rep["summary"], tier_of(rep, pl), kind == "REGRESSION"))
+
+        # Model swaps vary Config, not the file -- so the file must be pristine
+        # first, or the last harmless patch above contaminates every result.
+        shutil.copy(BACKUP, APP)
+        importlib.invalidate_caches()
+
+        for name, (override, should_fire) in MODEL_SWAP.items():
+            variant = replace(cfg, model_params={**cfg.model_params, **override})
+            rep = check(variant, baseline)
+            pl = rep["summary"]["FAIL"] > 0
+            nv = naive_fires(variant, baseline)
+            rows.append(("MODEL_SWAP", name, pl, nv, rep["summary"], tier_of(rep, pl), should_fire))
     finally:
         shutil.copy(BACKUP, APP)
 
     print(f"\n{'':<4}{'variant':<26}{'PromptLock':<12}{'naive diff':<12}{'verdicts':<14}caught by")
     print("-" * 96)
-    for kind, name, pl, nv, s, tier in rows:
-        want = kind == "REGRESSION"
+    for kind, name, pl, nv, s, tier, want in rows:
         mark = lambda fired: ("FIRE" if fired else "quiet")  # noqa: E731
         ok = "✓" if pl == want else "✗"
         print(
@@ -138,6 +165,11 @@ def main() -> None:
             f"{label:<20} recall {tp}/{nr} ({rec:.0%})   "
             f"false positives {fp}/{nh} ({fp / nh:.0%})   precision {prec:.0%}"
         )
+
+    swaps = [r for r in rows if r[0] == "MODEL_SWAP"]
+    if swaps:
+        right = sum(1 for r in swaps if r[2] == r[6])
+        print(f"{'model / params':<20} {right}/{len(swaps)} classified correctly")
     print("=" * 82)
 
 

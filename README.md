@@ -72,6 +72,19 @@ buys precision; the suite gate buys back sensitivity. The threshold sits in the
 measured gap between harmless and behavioural edits (`scripts/calibrate.py`),
 not in a guess.
 
+**A model swap is a prompt change.** The fingerprint covers the model id and
+sampling parameters, not just the template, so a cost-driven downgrade is caught
+by the same gate — and the PR comment states the trade in one line:
+
+```
+> ⚠️ What changed
+> - `model`: `claude-sonnet-4-6` → `claude-haiku-4-5`
+> - cost: $0.000332 → $0.000089 per run (-73%)
+```
+
+73% cheaper, 6 of 50 cases regressed. That decision currently gets made in a
+spreadsheet with no quality number in it.
+
 **Judge spend scales with the change, not the suite.** The judge is only invoked
 on cases that already drifted, plus the top 5 when systemic drift fires. A no-op
 PR costs zero judge calls.
@@ -79,7 +92,8 @@ PR costs zero judge calls.
 ## Results
 
 `python3 scripts/benchmark.py` — 6 prompt edits that genuinely degrade output,
-10 that a reviewer would wave through, 50 cases each.
+10 that a reviewer would wave through, and 3 model/parameter changes. 50 cases
+each, 19 variants, no API key required.
 
 | Detector | Recall | False positives | Precision |
 |---|---|---|---|
@@ -88,6 +102,15 @@ PR costs zero judge calls.
 
 Both detectors find every real regression. Only one is quiet enough to leave
 switched on.
+
+The model/parameter group is scored separately, since two of its three variants
+*should* fire and one should not:
+
+| Variant | Expected | Result |
+|---|---|---|
+| `M1` sonnet → haiku | fire | ✅ fires — format leak, 6 of 50 regressed |
+| `M2` temperature 0.0 → 0.2 | quiet | ✅ quiet — inside the measured noise |
+| `M3` max_tokens 1000 → 24 | fire | ✅ fires — truncation breaks JSON on 42 of 50 |
 
 Two of the six break **zero assertions** — `R4 hedging-instruction` and
 `R6 urgency-inflation` produce perfectly valid JSON with the wrong values.
@@ -166,6 +189,12 @@ suite_drift_threshold: 0.025   # median drift that counts as a distribution shif
 systemic_judge_sample: 5       # cases sent to the judge when systemic drift fires
 break_confidence: 0.95     # confidence level for the pass-rate interval
 break_margin: 0.2          # how far below baseline the upper bound must sit
+
+model_params:              # part of the fingerprint — a swap is a change
+  model: claude-sonnet-4-6
+  temperature: 0.0
+  top_p: 1.0
+  max_tokens: 1000
 judge_enabled: true
 confirm_reruns: true      # re-sample before failing the build
 

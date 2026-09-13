@@ -29,6 +29,13 @@ It is **not** evidence about any real model's behaviour. The benchmark numbers
 measure *the detector*, not the model. Run `PROMPTLOCK_PROVIDER=anthropic` for
 real behaviour.
 
+The model-tier simulation is the crudest part of it. A model id containing
+`haiku` or `mini` gets a higher format-leak rate and a lower evidence bar before
+it commits to a label. Those are plausible failure modes, not measured ones —
+no claim is being made that any real cheap model behaves this way. Likewise
+`PRICE_BY_MODEL` is rough public list pricing hardcoded in `providers.py`, so
+the cost delta in the PR comment is indicative, not an invoice.
+
 ## The mock judge is a rubric proxy
 
 Offline, `MockJudge` grades on parseability plus agreement with each case's
