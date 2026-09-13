@@ -1,0 +1,301 @@
+cases:
+- id: t001
+  input:
+    ticket: I was charged twice for my invoice this month, please refund the duplicate payment.
+  expect:
+    category: billing
+    urgency: medium
+- id: t002
+  input:
+    ticket: My card was declined but the subscription still shows active. What happened?
+  expect:
+    category: billing
+    urgency: medium
+- id: t003
+  input:
+    ticket: Can you explain the price increase on my last invoice?
+  expect:
+    category: billing
+    urgency: low
+- id: t004
+  input:
+    ticket: I need a refund for the annual payment, I cancelled two days after renewal.
+  expect:
+    category: billing
+    urgency: medium
+- id: t005
+  input:
+    ticket: The invoice PDF shows the wrong billing address.
+  expect:
+    category: billing
+    urgency: low
+- id: t006
+  input:
+    ticket: Why was I billed in USD when my account currency is EUR?
+  expect:
+    category: billing
+    urgency: low
+- id: t007
+  input:
+    ticket: Please send me all invoices for the last financial year.
+  expect:
+    category: billing
+    urgency: low
+- id: t008
+  input:
+    ticket: I upgraded mid-cycle and the charge looks wrong.
+  expect:
+    category: billing
+    urgency: low
+- id: t009
+  input:
+    ticket: Subscription renewed even though I cancelled. Need this refunded ASAP.
+  expect:
+    category: billing
+    urgency: high
+- id: t010
+  input:
+    ticket: Do you support payment by bank transfer instead of card?
+  expect:
+    category: billing
+    urgency: low
+- id: t011
+  input:
+    ticket: The export button crashes the whole page with a 500 error every time.
+  expect:
+    category: bug
+    urgency: medium
+- id: t012
+  input:
+    ticket: Uploading a CSV over 10MB fails silently, nothing happens.
+  expect:
+    category: bug
+    urgency: medium
+- id: t013
+  input:
+    ticket: Dark mode is broken on Safari, the text is invisible.
+  expect:
+    category: bug
+    urgency: medium
+- id: t014
+  input:
+    ticket: App freezes when I open the settings panel on mobile.
+  expect:
+    category: bug
+    urgency: low
+- id: t015
+  input:
+    ticket: I get an exception trace whenever I try to share a report.
+  expect:
+    category: bug
+    urgency: low
+- id: t016
+  input:
+    ticket: Search returns no results even for documents I can see in the list.
+  expect:
+    category: bug
+    urgency: low
+- id: t017
+  input:
+    ticket: The webhook fires twice for every event, causing duplicate records.
+  expect:
+    category: bug
+    urgency: low
+- id: t018
+  input:
+    ticket: Timestamps display in the wrong timezone after the last update.
+  expect:
+    category: bug
+    urgency: low
+- id: t019
+  input:
+    ticket: Everything is down, the dashboard will not load at all. Urgent.
+  expect:
+    category: bug
+    urgency: high
+- id: t020
+  input:
+    ticket: Pagination skips the last row on every page.
+  expect:
+    category: bug
+    urgency: low
+- id: t021
+  input:
+    ticket: Would be nice if you could add bulk delete for archived items.
+  expect:
+    category: feature_request
+    urgency: low
+- id: t022
+  input:
+    ticket: Please add support for SSO with Okta.
+  expect:
+    category: feature_request
+    urgency: low
+- id: t023
+  input:
+    ticket: Any chance of a dark mode for the mobile app?
+  expect:
+    category: feature_request
+    urgency: low
+- id: t024
+  input:
+    ticket: I wish there was a way to schedule reports weekly.
+  expect:
+    category: feature_request
+    urgency: low
+- id: t025
+  input:
+    ticket: 'Suggestion: let us tag teammates in comments.'
+  expect:
+    category: feature_request
+    urgency: low
+- id: t026
+  input:
+    ticket: Can you add a Slack integration for notifications?
+  expect:
+    category: feature_request
+    urgency: low
+- id: t027
+  input:
+    ticket: It would help a lot to have keyboard shortcuts for navigation.
+  expect:
+    category: feature_request
+    urgency: low
+- id: t028
+  input:
+    ticket: Please add an API endpoint for listing workspaces.
+  expect:
+    category: feature_request
+    urgency: low
+- id: t029
+  input:
+    ticket: I am locked out after too many login attempts, please reset.
+  expect:
+    category: account
+    urgency: high
+- id: t030
+  input:
+    ticket: How do I change the email address on my account?
+  expect:
+    category: account
+    urgency: low
+- id: t031
+  input:
+    ticket: I lost my 2fa device and cannot sign in.
+  expect:
+    category: account
+    urgency: high
+- id: t032
+  input:
+    ticket: Please delete my account and all associated data.
+  expect:
+    category: account
+    urgency: low
+- id: t033
+  input:
+    ticket: My password reset email never arrives.
+  expect:
+    category: account
+    urgency: low
+- id: t034
+  input:
+    ticket: I need to transfer ownership of the workspace to a colleague.
+  expect:
+    category: account
+    urgency: low
+- id: t035
+  input:
+    ticket: Can I merge two accounts that use different emails?
+  expect:
+    category: account
+    urgency: low
+- id: t036
+  input:
+    ticket: Login redirects me in a loop and never completes.
+  expect:
+    category: account
+    urgency: medium
+- id: t037
+  input:
+    ticket: Just wanted to say the new release is great, thanks team.
+  expect:
+    category: other
+    urgency: low
+- id: t038
+  input:
+    ticket: Do you have a status page I can subscribe to?
+  expect:
+    category: other
+    urgency: low
+- id: t039
+  input:
+    ticket: Where can I find your data processing agreement?
+  expect:
+    category: other
+    urgency: low
+- id: t040
+  input:
+    ticket: Are you hiring for backend roles right now?
+  expect:
+    category: other
+    urgency: low
+- id: t041
+  input:
+    ticket: What is your uptime guarantee on the business plan?
+  expect:
+    category: other
+    urgency: low
+- id: t042
+  input:
+    ticket: Is there a student discount available?
+  expect:
+    category: other
+    urgency: low
+- id: t043
+  input:
+    ticket: The payment page throws an error when I try to update my card.
+  expect:
+    category: billing
+    urgency: medium
+- id: t044
+  input:
+    ticket: I was charged but the app crashed before confirming, did it go through?
+  expect:
+    category: bug
+    urgency: medium
+- id: t045
+  input:
+    ticket: Login is broken after I changed my email address.
+  expect:
+    category: account
+    urgency: medium
+- id: t046
+  input:
+    ticket: The export is so slow it is basically unusable, can you make it faster?
+  expect:
+    category: feature_request
+    urgency: high
+- id: t047
+  input:
+    ticket: My invoice download link returns a 500.
+  expect:
+    category: bug
+    urgency: medium
+- id: t048
+  input:
+    ticket: Cannot sign in and I am being billed for a seat I cannot use.
+  expect:
+    category: account
+    urgency: high
+- id: t049
+  input:
+    ticket: There is no way to cancel a subscription in the UI, please add one.
+  expect:
+    category: feature_request
+    urgency: low
+- id: t050
+  input:
+    ticket: Following up on my previous ticket, any update?
+  expect:
+    category: other
+    urgency: low

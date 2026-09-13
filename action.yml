@@ -1,0 +1,32 @@
+name: PromptLock
+description: Fail the PR when a prompt or model change silently degrades LLM outputs.
+branding:
+  icon: lock
+  color: purple
+
+inputs:
+  config:
+    description: Path to promptlock.yaml
+    default: promptlock.yaml
+  fail-on:
+    description: "fail | drift"
+    default: fail
+
+outputs:
+  report:
+    description: Path to the markdown report
+    value: ${{ steps.run.outputs.report }}
+
+runs:
+  using: composite
+  steps:
+    - shell: bash
+      run: pip install -e "${{ github.action_path }}"
+    - id: run
+      shell: bash
+      run: |
+        promptlock -c "${{ inputs.config }}" check \
+          --markdown promptlock-report.md \
+          --json promptlock-report.json \
+          --fail-on "${{ inputs.fail-on }}"
+        echo "report=promptlock-report.md" >> "$GITHUB_OUTPUT"

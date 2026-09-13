@@ -1,0 +1,27 @@
+target: examples.demo_app.app:render
+cases: examples/demo_app/cases.yaml
+
+# Each case is run k times so its natural variance can be measured.
+runs_per_case: 3
+provider: mock
+
+# Drift must exceed max(drift_floor, case_noise_floor * drift_multiplier).
+drift_floor: 0.12
+drift_multiplier: 1.5
+
+suite_drift_threshold: 0.025
+systemic_judge_sample: 5
+
+judge_enabled: true
+confirm_reruns: true
+
+assertions:
+  require_json: true
+  required_keys: [category, urgency, summary]
+  enums:
+    category: [billing, bug, feature_request, account, other]
+    urgency: [low, medium, high]
+  must_not_match:
+    - "^(sure|here'?s|certainly)"
+  max_latency_ms: 3000
+  max_cost_usd: 0.01

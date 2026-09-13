@@ -1,0 +1,2035 @@
+{
+  "assertions": {
+    "enums": {
+      "category": [
+        "billing",
+        "bug",
+        "feature_request",
+        "account",
+        "other"
+      ],
+      "urgency": [
+        "low",
+        "medium",
+        "high"
+      ]
+    },
+    "max_cost_usd": 0.01,
+    "max_latency_ms": 3000,
+    "must_not_match": [
+      "^(sure|here'?s|certainly)"
+    ],
+    "require_json": true,
+    "required_keys": [
+      "category",
+      "urgency",
+      "summary"
+    ]
+  },
+  "cases": {
+    "t001": {
+      "assert_rates": {
+        "cost": 1.0,
+        "enum:category": 1.0,
+        "enum:urgency": 1.0,
+        "json_bare": 1.0,
+        "json_parses": 1.0,
+        "key:category": 1.0,
+        "key:summary": 1.0,
+        "key:urgency": 1.0,
+        "latency": 1.0,
+        "nomatch:^(sure|here'?s|certainly)": 1.0
+      },
+      "hint": {
+        "category": "billing",
+        "urgency": "medium"
+      },
+      "noise_floor": 0.0,
+      "prompt": "You are a support triage assistant.\n\nClassify the ticket below.\n\n<ticket>\nI was charged twice for my invoice this month, please refund the duplicate payment.\n</ticket>\n\nReturn category (one of: billing, bug, feature_request, account, other),\nurgency (one of: low, medium, high), and a one-line summary.\n\nRespond with ONLY valid JSON. No markdown fence, no prose.\n",
+      "runs": [
+        {
+          "cost_usd": 0.00036,
+          "latency_ms": 412.6,
+          "text": "{\"category\": \"billing\", \"urgency\": \"low\", \"summary\": \"i was charged twice for my invoice this month, please refund the\"}",
+          "tokens": 120
+        },
+        {
+          "cost_usd": 0.00036,
+          "latency_ms": 375.0,
+          "text": "{\"category\": \"billing\", \"urgency\": \"low\", \"summary\": \"i was charged twice for my invoice this month, please refund the\"}",
+          "tokens": 120
+        },
+        {
+          "cost_usd": 0.00036,
+          "latency_ms": 367.5,
+          "text": "{\"category\": \"billing\", \"urgency\": \"low\", \"summary\": \"i was charged twice for my invoice this month, please refund the\"}",
+          "tokens": 120
+        }
+      ]
+    },
+    "t002": {
+      "assert_rates": {
+        "cost": 1.0,
+        "enum:category": 1.0,
+        "enum:urgency": 1.0,
+        "json_bare": 1.0,
+        "json_parses": 1.0,
+        "key:category": 1.0,
+        "key:summary": 1.0,
+        "key:urgency": 1.0,
+        "latency": 1.0,
+        "nomatch:^(sure|here'?s|certainly)": 1.0
+      },
+      "hint": {
+        "category": "billing",
+        "urgency": "medium"
+      },
+      "noise_floor": 0.0308,
+      "prompt": "You are a support triage assistant.\n\nClassify the ticket below.\n\n<ticket>\nMy card was declined but the subscription still shows active. What happened?\n</ticket>\n\nReturn category (one of: billing, bug, feature_request, account, other),\nurgency (one of: low, medium, high), and a one-line summary.\n\nRespond with ONLY valid JSON. No markdown fence, no prose.\n",
+      "runs": [
+        {
+          "cost_usd": 0.000366,
+          "latency_ms": 402.8,
+          "text": "{\"category\": \"billing\", \"urgency\": \"low\", \"summary\": \"my card was declined but the subscription still shows active. what happened?\"}",
+          "tokens": 122
+        },
+        {
+          "cost_usd": 0.000366,
+          "latency_ms": 429.1,
+          "text": "{\"category\": \"billing\", \"urgency\": \"low\", \"summary\": \"my card was declined but the subscription still shows active. what happened?\"}",
+          "tokens": 122
+        },
+        {
+          "cost_usd": 0.000366,
+          "latency_ms": 452.4,
+          "text": "{\"category\": \"billing\", \"urgency\": \"medium\", \"summary\": \"my card was declined but the subscription still shows active. what happened?\"}",
+          "tokens": 122
+        }
+      ]
+    },
+    "t003": {
+      "assert_rates": {
+        "cost": 1.0,
+        "enum:category": 1.0,
+        "enum:urgency": 1.0,
+        "json_bare": 1.0,
+        "json_parses": 1.0,
+        "key:category": 1.0,
+        "key:summary": 1.0,
+        "key:urgency": 1.0,
+        "latency": 1.0,
+        "nomatch:^(sure|here'?s|certainly)": 1.0
+      },
+      "hint": {
+        "category": "billing",
+        "urgency": "low"
+      },
+      "noise_floor": 0.0367,
+      "prompt": "You are a support triage assistant.\n\nClassify the ticket below.\n\n<ticket>\nCan you explain the price increase on my last invoice?\n</ticket>\n\nReturn category (one of: billing, bug, feature_request, account, other),\nurgency (one of: low, medium, high), and a one-line summary.\n\nRespond with ONLY valid JSON. No markdown fence, no prose.\n",
+      "runs": [
+        {
+          "cost_usd": 0.000333,
+          "latency_ms": 449.2,
+          "text": "{\"category\": \"billing\", \"urgency\": \"medium\", \"summary\": \"can you explain the price increase on my last invoice?\"}",
+          "tokens": 111
+        },
+        {
+          "cost_usd": 0.00033,
+          "latency_ms": 428.7,
+          "text": "{\"category\": \"billing\", \"urgency\": \"low\", \"summary\": \"can you explain the price increase on my last invoice?\"}",
+          "tokens": 110
+        },
+        {
+          "cost_usd": 0.00033,
+          "latency_ms": 445.1,
+          "text": "{\"category\": \"billing\", \"urgency\": \"low\", \"summary\": \"can you explain the price increase on my last invoice?\"}",
+          "tokens": 110
+        }
+      ]
+    },
+    "t004": {
+      "assert_rates": {
+        "cost": 1.0,
+        "enum:category": 1.0,
+        "enum:urgency": 1.0,
+        "json_bare": 1.0,
+        "json_parses": 1.0,
+        "key:category": 1.0,
+        "key:summary": 1.0,
+        "key:urgency": 1.0,
+        "latency": 1.0,
+        "nomatch:^(sure|here'?s|certainly)": 1.0
+      },
+      "hint": {
+        "category": "billing",
+        "urgency": "medium"
+      },
+      "noise_floor": 0.036,
+      "prompt": "You are a support triage assistant.\n\nClassify the ticket below.\n\n<ticket>\nI need a refund for the annual payment, I cancelled two days after renewal.\n</ticket>\n\nReturn category (one of: billing, bug, feature_request, account, other),\nurgency (one of: low, medium, high), and a one-line summary.\n\nRespond with ONLY valid JSON. No markdown fence, no prose.\n",
+      "runs": [
+        {
+          "cost_usd": 0.000351,
+          "latency_ms": 412.5,
+          "text": "{\"category\": \"billing\", \"urgency\": \"low\", \"summary\": \"i need a refund for the annual payment, i cancelled two days\"}",
+          "tokens": 117
+        },
+        {
+          "cost_usd": 0.000351,
+          "latency_ms": 375.6,
+          "text": "{\"category\": \"billing\", \"urgency\": \"medium\", \"summary\": \"i need a refund for the annual payment, i cancelled two days\"}",
+          "tokens": 117
+        },
+        {
+          "cost_usd": 0.000351,
+          "latency_ms": 370.5,
+          "text": "{\"category\": \"billing\", \"urgency\": \"medium\", \"summary\": \"i need a refund for the annual payment, i cancelled two days\"}",
+          "tokens": 117
+        }
+      ]
+    },
+    "t005": {
+      "assert_rates": {
+        "cost": 1.0,
+        "enum:category": 1.0,
+        "enum:urgency": 1.0,
+        "json_bare": 1.0,
+        "json_parses": 1.0,
+        "key:category": 1.0,
+        "key:summary": 1.0,
+        "key:urgency": 1.0,
+        "latency": 1.0,
+        "nomatch:^(sure|here'?s|certainly)": 1.0
+      },
+      "hint": {
+        "category": "billing",
+        "urgency": "low"
+      },
+      "noise_floor": 0.0402,
+      "prompt": "You are a support triage assistant.\n\nClassify the ticket below.\n\n<ticket>\nThe invoice PDF shows the wrong billing address.\n</ticket>\n\nReturn category (one of: billing, bug, feature_request, account, other),\nurgency (one of: low, medium, high), and a one-line summary.\n\nRespond with ONLY valid JSON. No markdown fence, no prose.\n",
+      "runs": [
+        {
+          "cost_usd": 0.000324,
+          "latency_ms": 435.6,
+          "text": "{\"category\": \"billing\", \"urgency\": \"low\", \"summary\": \"the invoice pdf shows the wrong billing address.\"}",
+          "tokens": 108
+        },
+        {
+          "cost_usd": 0.000324,
+          "latency_ms": 403.7,
+          "text": "{\"category\": \"billing\", \"urgency\": \"medium\", \"summary\": \"the invoice pdf shows the wrong billing address.\"}",
+          "tokens": 108
+        },
+        {
+          "cost_usd": 0.000324,
+          "latency_ms": 441.2,
+          "text": "{\"category\": \"billing\", \"urgency\": \"low\", \"summary\": \"the invoice pdf shows the wrong billing address.\"}",
+          "tokens": 108
+        }
+      ]
+    },
+    "t006": {
+      "assert_rates": {
+        "cost": 1.0,
+        "enum:category": 1.0,
+        "enum:urgency": 1.0,
+        "json_bare": 0.3333333333333333,
+        "json_parses": 1.0,
+        "key:category": 1.0,
+        "key:summary": 1.0,
+        "key:urgency": 1.0,
+        "latency": 1.0,
+        "nomatch:^(sure|here'?s|certainly)": 1.0
+      },
+      "hint": {
+        "category": "billing",
+        "urgency": "low"
+      },
+      "noise_floor": 0.0287,
+      "prompt": "You are a support triage assistant.\n\nClassify the ticket below.\n\n<ticket>\nWhy was I billed in USD when my account currency is EUR?\n</ticket>\n\nReturn category (one of: billing, bug, feature_request, account, other),\nurgency (one of: low, medium, high), and a one-line summary.\n\nRespond with ONLY valid JSON. No markdown fence, no prose.\n",
+      "runs": [
+        {
+          "cost_usd": 0.000345,
+          "latency_ms": 365.4,
+          "text": "```json\n{\"category\": \"billing\", \"urgency\": \"low\", \"summary\": \"why was i billed in usd when my account currency is eur?\"}\n```",
+          "tokens": 115
+        },
+        {
+          "cost_usd": 0.000345,
+          "latency_ms": 421.3,
+          "text": "```json\n{\"category\": \"billing\", \"urgency\": \"low\", \"summary\": \"why was i billed in usd when my account currency is eur?\"}\n```",
+          "tokens": 115
+        },
+        {
+          "cost_usd": 0.000336,
+          "latency_ms": 403.1,
+          "text": "{\"category\": \"billing\", \"urgency\": \"low\", \"summary\": \"why was i billed in usd when my account currency is eur?\"}",
+          "tokens": 112
+        }
+      ]
+    },
+    "t007": {
+      "assert_rates": {
+        "cost": 1.0,
+        "enum:category": 1.0,
+        "enum:urgency": 1.0,
+        "json_bare": 1.0,
+        "json_parses": 1.0,
+        "key:category": 1.0,
+        "key:summary": 1.0,
+        "key:urgency": 1.0,
+        "latency": 1.0,
+        "nomatch:^(sure|here'?s|certainly)": 1.0
+      },
+      "hint": {
+        "category": "billing",
+        "urgency": "low"
+      },
+      "noise_floor": 0.0,
+      "prompt": "You are a support triage assistant.\n\nClassify the ticket below.\n\n<ticket>\nPlease send me all invoices for the last financial year.\n</ticket>\n\nReturn category (one of: billing, bug, feature_request, account, other),\nurgency (one of: low, medium, high), and a one-line summary.\n\nRespond with ONLY valid JSON. No markdown fence, no prose.\n",
+      "runs": [
+        {
+          "cost_usd": 0.000336,
+          "latency_ms": 453.7,
+          "text": "{\"category\": \"billing\", \"urgency\": \"low\", \"summary\": \"please send me all invoices for the last financial year.\"}",
+          "tokens": 112
+        },
+        {
+          "cost_usd": 0.000336,
+          "latency_ms": 422.2,
+          "text": "{\"category\": \"billing\", \"urgency\": \"low\", \"summary\": \"please send me all invoices for the last financial year.\"}",
+          "tokens": 112
+        },
+        {
+          "cost_usd": 0.000336,
+          "latency_ms": 349.2,
+          "text": "{\"category\": \"billing\", \"urgency\": \"low\", \"summary\": \"please send me all invoices for the last financial year.\"}",
+          "tokens": 112
+        }
+      ]
+    },
+    "t008": {
+      "assert_rates": {
+        "cost": 1.0,
+        "enum:category": 1.0,
+        "enum:urgency": 1.0,
+        "json_bare": 1.0,
+        "json_parses": 1.0,
+        "key:category": 1.0,
+        "key:summary": 1.0,
+        "key:urgency": 1.0,
+        "latency": 1.0,
+        "nomatch:^(sure|here'?s|certainly)": 1.0
+      },
+      "hint": {
+        "category": "billing",
+        "urgency": "low"
+      },
+      "noise_floor": 0.0,
+      "prompt": "You are a support triage assistant.\n\nClassify the ticket below.\n\n<ticket>\nI upgraded mid-cycle and the charge looks wrong.\n</ticket>\n\nReturn category (one of: billing, bug, feature_request, account, other),\nurgency (one of: low, medium, high), and a one-line summary.\n\nRespond with ONLY valid JSON. No markdown fence, no prose.\n",
+      "runs": [
+        {
+          "cost_usd": 0.000324,
+          "latency_ms": 441.1,
+          "text": "{\"category\": \"billing\", \"urgency\": \"low\", \"summary\": \"i upgraded mid-cycle and the charge looks wrong.\"}",
+          "tokens": 108
+        },
+        {
+          "cost_usd": 0.000324,
+          "latency_ms": 372.3,
+          "text": "{\"category\": \"billing\", \"urgency\": \"low\", \"summary\": \"i upgraded mid-cycle and the charge looks wrong.\"}",
+          "tokens": 108
+        },
+        {
+          "cost_usd": 0.000324,
+          "latency_ms": 398.2,
+          "text": "{\"category\": \"billing\", \"urgency\": \"low\", \"summary\": \"i upgraded mid-cycle and the charge looks wrong.\"}",
+          "tokens": 108
+        }
+      ]
+    },
+    "t009": {
+      "assert_rates": {
+        "cost": 1.0,
+        "enum:category": 1.0,
+        "enum:urgency": 1.0,
+        "json_bare": 1.0,
+        "json_parses": 1.0,
+        "key:category": 1.0,
+        "key:summary": 1.0,
+        "key:urgency": 1.0,
+        "latency": 1.0,
+        "nomatch:^(sure|here'?s|certainly)": 1.0
+      },
+      "hint": {
+        "category": "billing",
+        "urgency": "high"
+      },
+      "noise_floor": 0.0,
+      "prompt": "You are a support triage assistant.\n\nClassify the ticket below.\n\n<ticket>\nSubscription renewed even though I cancelled. Need this refunded ASAP.\n</ticket>\n\nReturn category (one of: billing, bug, feature_request, account, other),\nurgency (one of: low, medium, high), and a one-line summary.\n\nRespond with ONLY valid JSON. No markdown fence, no prose.\n",
+      "runs": [
+        {
+          "cost_usd": 0.000354,
+          "latency_ms": 405.3,
+          "text": "{\"category\": \"billing\", \"urgency\": \"high\", \"summary\": \"subscription renewed even though i cancelled. need this refunded asap.\"}",
+          "tokens": 118
+        },
+        {
+          "cost_usd": 0.000354,
+          "latency_ms": 379.1,
+          "text": "{\"category\": \"billing\", \"urgency\": \"high\", \"summary\": \"subscription renewed even though i cancelled. need this refunded asap.\"}",
+          "tokens": 118
+        },
+        {
+          "cost_usd": 0.000354,
+          "latency_ms": 388.4,
+          "text": "{\"category\": \"billing\", \"urgency\": \"high\", \"summary\": \"subscription renewed even though i cancelled. need this refunded asap.\"}",
+          "tokens": 118
+        }
+      ]
+    },
+    "t010": {
+      "assert_rates": {
+        "cost": 1.0,
+        "enum:category": 1.0,
+        "enum:urgency": 1.0,
+        "json_bare": 1.0,
+        "json_parses": 1.0,
+        "key:category": 1.0,
+        "key:summary": 1.0,
+        "key:urgency": 1.0,
+        "latency": 1.0,
+        "nomatch:^(sure|here'?s|certainly)": 1.0
+      },
+      "hint": {
+        "category": "billing",
+        "urgency": "low"
+      },
+      "noise_floor": 0.0353,
+      "prompt": "You are a support triage assistant.\n\nClassify the ticket below.\n\n<ticket>\nDo you support payment by bank transfer instead of card?\n</ticket>\n\nReturn category (one of: billing, bug, feature_request, account, other),\nurgency (one of: low, medium, high), and a one-line summary.\n\nRespond with ONLY valid JSON. No markdown fence, no prose.\n",
+      "runs": [
+        {
+          "cost_usd": 0.000336,
+          "latency_ms": 367.4,
+          "text": "{\"category\": \"billing\", \"urgency\": \"low\", \"summary\": \"do you support payment by bank transfer instead of card?\"}",
+          "tokens": 112
+        },
+        {
+          "cost_usd": 0.000336,
+          "latency_ms": 453.0,
+          "text": "{\"category\": \"billing\", \"urgency\": \"low\", \"summary\": \"do you support payment by bank transfer instead of card?\"}",
+          "tokens": 112
+        },
+        {
+          "cost_usd": 0.000336,
+          "latency_ms": 344.5,
+          "text": "{\"category\": \"billing\", \"urgency\": \"medium\", \"summary\": \"do you support payment by bank transfer instead of card?\"}",
+          "tokens": 112
+        }
+      ]
+    },
+    "t011": {
+      "assert_rates": {
+        "cost": 1.0,
+        "enum:category": 1.0,
+        "enum:urgency": 1.0,
+        "json_bare": 0.6666666666666666,
+        "json_parses": 1.0,
+        "key:category": 1.0,
+        "key:summary": 1.0,
+        "key:urgency": 1.0,
+        "latency": 1.0,
+        "nomatch:^(sure|here'?s|certainly)": 1.0
+      },
+      "hint": {
+        "category": "bug",
+        "urgency": "medium"
+      },
+      "noise_floor": 0.0594,
+      "prompt": "You are a support triage assistant.\n\nClassify the ticket below.\n\n<ticket>\nThe export button crashes the whole page with a 500 error every time.\n</ticket>\n\nReturn category (one of: billing, bug, feature_request, account, other),\nurgency (one of: low, medium, high), and a one-line summary.\n\nRespond with ONLY valid JSON. No markdown fence, no prose.\n",
+      "runs": [
+        {
+          "cost_usd": 0.000354,
+          "latency_ms": 397.0,
+          "text": "```json\n{\"category\": \"bug\", \"urgency\": \"low\", \"summary\": \"the export button crashes the whole page with a 500 error every\"}\n```",
+          "tokens": 118
+        },
+        {
+          "cost_usd": 0.000348,
+          "latency_ms": 365.2,
+          "text": "{\"category\": \"bug\", \"urgency\": \"medium\", \"summary\": \"the export button crashes the whole page with a 500 error every\"}",
+          "tokens": 116
+        },
+        {
+          "cost_usd": 0.000348,
+          "latency_ms": 436.0,
+          "text": "{\"category\": \"bug\", \"urgency\": \"medium\", \"summary\": \"the export button crashes the whole page with a 500 error every\"}",
+          "tokens": 116
+        }
+      ]
+    },
+    "t012": {
+      "assert_rates": {
+        "cost": 1.0,
+        "enum:category": 1.0,
+        "enum:urgency": 1.0,
+        "json_bare": 1.0,
+        "json_parses": 1.0,
+        "key:category": 1.0,
+        "key:summary": 1.0,
+        "key:urgency": 1.0,
+        "latency": 1.0,
+        "nomatch:^(sure|here'?s|certainly)": 1.0
+      },
+      "hint": {
+        "category": "bug",
+        "urgency": "medium"
+      },
+      "noise_floor": 0.0,
+      "prompt": "You are a support triage assistant.\n\nClassify the ticket below.\n\n<ticket>\nUploading a CSV over 10MB fails silently, nothing happens.\n</ticket>\n\nReturn category (one of: billing, bug, feature_request, account, other),\nurgency (one of: low, medium, high), and a one-line summary.\n\nRespond with ONLY valid JSON. No markdown fence, no prose.\n",
+      "runs": [
+        {
+          "cost_usd": 0.000333,
+          "latency_ms": 445.8,
+          "text": "{\"category\": \"bug\", \"urgency\": \"low\", \"summary\": \"uploading a csv over 10mb fails silently, nothing happens.\"}",
+          "tokens": 111
+        },
+        {
+          "cost_usd": 0.000333,
+          "latency_ms": 382.3,
+          "text": "{\"category\": \"bug\", \"urgency\": \"low\", \"summary\": \"uploading a csv over 10mb fails silently, nothing happens.\"}",
+          "tokens": 111
+        },
+        {
+          "cost_usd": 0.000333,
+          "latency_ms": 379.3,
+          "text": "{\"category\": \"bug\", \"urgency\": \"low\", \"summary\": \"uploading a csv over 10mb fails silently, nothing happens.\"}",
+          "tokens": 111
+        }
+      ]
+    },
+    "t013": {
+      "assert_rates": {
+        "cost": 1.0,
+        "enum:category": 1.0,
+        "enum:urgency": 1.0,
+        "json_bare": 1.0,
+        "json_parses": 1.0,
+        "key:category": 1.0,
+        "key:summary": 1.0,
+        "key:urgency": 1.0,
+        "latency": 1.0,
+        "nomatch:^(sure|here'?s|certainly)": 1.0
+      },
+      "hint": {
+        "category": "bug",
+        "urgency": "medium"
+      },
+      "noise_floor": 0.0,
+      "prompt": "You are a support triage assistant.\n\nClassify the ticket below.\n\n<ticket>\nDark mode is broken on Safari, the text is invisible.\n</ticket>\n\nReturn category (one of: billing, bug, feature_request, account, other),\nurgency (one of: low, medium, high), and a one-line summary.\n\nRespond with ONLY valid JSON. No markdown fence, no prose.\n",
+      "runs": [
+        {
+          "cost_usd": 0.000327,
+          "latency_ms": 359.5,
+          "text": "{\"category\": \"bug\", \"urgency\": \"low\", \"summary\": \"dark mode is broken on safari, the text is invisible.\"}",
+          "tokens": 109
+        },
+        {
+          "cost_usd": 0.000327,
+          "latency_ms": 411.5,
+          "text": "{\"category\": \"bug\", \"urgency\": \"low\", \"summary\": \"dark mode is broken on safari, the text is invisible.\"}",
+          "tokens": 109
+        },
+        {
+          "cost_usd": 0.000327,
+          "latency_ms": 333.7,
+          "text": "{\"category\": \"bug\", \"urgency\": \"low\", \"summary\": \"dark mode is broken on safari, the text is invisible.\"}",
+          "tokens": 109
+        }
+      ]
+    },
+    "t014": {
+      "assert_rates": {
+        "cost": 1.0,
+        "enum:category": 1.0,
+        "enum:urgency": 1.0,
+        "json_bare": 0.6666666666666666,
+        "json_parses": 1.0,
+        "key:category": 1.0,
+        "key:summary": 1.0,
+        "key:urgency": 1.0,
+        "latency": 1.0,
+        "nomatch:^(sure|here'?s|certainly)": 1.0
+      },
+      "hint": {
+        "category": "bug",
+        "urgency": "low"
+      },
+      "noise_floor": 0.068,
+      "prompt": "You are a support triage assistant.\n\nClassify the ticket below.\n\n<ticket>\nApp freezes when I open the settings panel on mobile.\n</ticket>\n\nReturn category (one of: billing, bug, feature_request, account, other),\nurgency (one of: low, medium, high), and a one-line summary.\n\nRespond with ONLY valid JSON. No markdown fence, no prose.\n",
+      "runs": [
+        {
+          "cost_usd": 0.000336,
+          "latency_ms": 360.0,
+          "text": "```json\n{\"category\": \"bug\", \"urgency\": \"low\", \"summary\": \"app freezes when i open the settings panel on mobile.\"}\n```",
+          "tokens": 112
+        },
+        {
+          "cost_usd": 0.000327,
+          "latency_ms": 374.1,
+          "text": "{\"category\": \"bug\", \"urgency\": \"low\", \"summary\": \"app freezes when i open the settings panel on mobile.\"}",
+          "tokens": 109
+        },
+        {
+          "cost_usd": 0.00033,
+          "latency_ms": 453.8,
+          "text": "{\"category\": \"bug\", \"urgency\": \"medium\", \"summary\": \"app freezes when i open the settings panel on mobile.\"}",
+          "tokens": 110
+        }
+      ]
+    },
+    "t015": {
+      "assert_rates": {
+        "cost": 1.0,
+        "enum:category": 1.0,
+        "enum:urgency": 1.0,
+        "json_bare": 1.0,
+        "json_parses": 1.0,
+        "key:category": 1.0,
+        "key:summary": 1.0,
+        "key:urgency": 1.0,
+        "latency": 1.0,
+        "nomatch:^(sure|here'?s|certainly)": 1.0
+      },
+      "hint": {
+        "category": "bug",
+        "urgency": "low"
+      },
+      "noise_floor": 0.0,
+      "prompt": "You are a support triage assistant.\n\nClassify the ticket below.\n\n<ticket>\nI get an exception trace whenever I try to share a report.\n</ticket>\n\nReturn category (one of: billing, bug, feature_request, account, other),\nurgency (one of: low, medium, high), and a one-line summary.\n\nRespond with ONLY valid JSON. No markdown fence, no prose.\n",
+      "runs": [
+        {
+          "cost_usd": 0.000333,
+          "latency_ms": 431.7,
+          "text": "{\"category\": \"bug\", \"urgency\": \"low\", \"summary\": \"i get an exception trace whenever i try to share a report.\"}",
+          "tokens": 111
+        },
+        {
+          "cost_usd": 0.000333,
+          "latency_ms": 370.0,
+          "text": "{\"category\": \"bug\", \"urgency\": \"low\", \"summary\": \"i get an exception trace whenever i try to share a report.\"}",
+          "tokens": 111
+        },
+        {
+          "cost_usd": 0.000333,
+          "latency_ms": 371.3,
+          "text": "{\"category\": \"bug\", \"urgency\": \"low\", \"summary\": \"i get an exception trace whenever i try to share a report.\"}",
+          "tokens": 111
+        }
+      ]
+    },
+    "t016": {
+      "assert_rates": {
+        "cost": 1.0,
+        "enum:category": 1.0,
+        "enum:urgency": 1.0,
+        "json_bare": 1.0,
+        "json_parses": 1.0,
+        "key:category": 1.0,
+        "key:summary": 1.0,
+        "key:urgency": 1.0,
+        "latency": 1.0,
+        "nomatch:^(sure|here'?s|certainly)": 1.0
+      },
+      "hint": {
+        "category": "bug",
+        "urgency": "low"
+      },
+      "noise_floor": 0.0379,
+      "prompt": "You are a support triage assistant.\n\nClassify the ticket below.\n\n<ticket>\nSearch returns no results even for documents I can see in the list.\n</ticket>\n\nReturn category (one of: billing, bug, feature_request, account, other),\nurgency (one of: low, medium, high), and a one-line summary.\n\nRespond with ONLY valid JSON. No markdown fence, no prose.\n",
+      "runs": [
+        {
+          "cost_usd": 0.000342,
+          "latency_ms": 340.9,
+          "text": "{\"category\": \"other\", \"urgency\": \"low\", \"summary\": \"search returns no results even for documents i can see in the\"}",
+          "tokens": 114
+        },
+        {
+          "cost_usd": 0.000345,
+          "latency_ms": 459.0,
+          "text": "{\"category\": \"other\", \"urgency\": \"medium\", \"summary\": \"search returns no results even for documents i can see in the\"}",
+          "tokens": 115
+        },
+        {
+          "cost_usd": 0.000342,
+          "latency_ms": 436.6,
+          "text": "{\"category\": \"other\", \"urgency\": \"low\", \"summary\": \"search returns no results even for documents i can see in the\"}",
+          "tokens": 114
+        }
+      ]
+    },
+    "t017": {
+      "assert_rates": {
+        "cost": 1.0,
+        "enum:category": 1.0,
+        "enum:urgency": 1.0,
+        "json_bare": 1.0,
+        "json_parses": 1.0,
+        "key:category": 1.0,
+        "key:summary": 1.0,
+        "key:urgency": 1.0,
+        "latency": 1.0,
+        "nomatch:^(sure|here'?s|certainly)": 1.0
+      },
+      "hint": {
+        "category": "bug",
+        "urgency": "low"
+      },
+      "noise_floor": 0.0319,
+      "prompt": "You are a support triage assistant.\n\nClassify the ticket below.\n\n<ticket>\nThe webhook fires twice for every event, causing duplicate records.\n</ticket>\n\nReturn category (one of: billing, bug, feature_request, account, other),\nurgency (one of: low, medium, high), and a one-line summary.\n\nRespond with ONLY valid JSON. No markdown fence, no prose.\n",
+      "runs": [
+        {
+          "cost_usd": 0.000348,
+          "latency_ms": 358.9,
+          "text": "{\"category\": \"other\", \"urgency\": \"low\", \"summary\": \"the webhook fires twice for every event, causing duplicate records.\"}",
+          "tokens": 116
+        },
+        {
+          "cost_usd": 0.000348,
+          "latency_ms": 393.4,
+          "text": "{\"category\": \"other\", \"urgency\": \"low\", \"summary\": \"the webhook fires twice for every event, causing duplicate records.\"}",
+          "tokens": 116
+        },
+        {
+          "cost_usd": 0.000351,
+          "latency_ms": 446.4,
+          "text": "{\"category\": \"other\", \"urgency\": \"medium\", \"summary\": \"the webhook fires twice for every event, causing duplicate records.\"}",
+          "tokens": 117
+        }
+      ]
+    },
+    "t018": {
+      "assert_rates": {
+        "cost": 1.0,
+        "enum:category": 1.0,
+        "enum:urgency": 1.0,
+        "json_bare": 1.0,
+        "json_parses": 1.0,
+        "key:category": 1.0,
+        "key:summary": 1.0,
+        "key:urgency": 1.0,
+        "latency": 1.0,
+        "nomatch:^(sure|here'?s|certainly)": 1.0
+      },
+      "hint": {
+        "category": "bug",
+        "urgency": "low"
+      },
+      "noise_floor": 0.0,
+      "prompt": "You are a support triage assistant.\n\nClassify the ticket below.\n\n<ticket>\nTimestamps display in the wrong timezone after the last update.\n</ticket>\n\nReturn category (one of: billing, bug, feature_request, account, other),\nurgency (one of: low, medium, high), and a one-line summary.\n\nRespond with ONLY valid JSON. No markdown fence, no prose.\n",
+      "runs": [
+        {
+          "cost_usd": 0.000342,
+          "latency_ms": 449.1,
+          "text": "{\"category\": \"other\", \"urgency\": \"low\", \"summary\": \"timestamps display in the wrong timezone after the last update.\"}",
+          "tokens": 114
+        },
+        {
+          "cost_usd": 0.000342,
+          "latency_ms": 402.3,
+          "text": "{\"category\": \"other\", \"urgency\": \"low\", \"summary\": \"timestamps display in the wrong timezone after the last update.\"}",
+          "tokens": 114
+        },
+        {
+          "cost_usd": 0.000342,
+          "latency_ms": 446.2,
+          "text": "{\"category\": \"other\", \"urgency\": \"low\", \"summary\": \"timestamps display in the wrong timezone after the last update.\"}",
+          "tokens": 114
+        }
+      ]
+    },
+    "t019": {
+      "assert_rates": {
+        "cost": 1.0,
+        "enum:category": 1.0,
+        "enum:urgency": 1.0,
+        "json_bare": 1.0,
+        "json_parses": 1.0,
+        "key:category": 1.0,
+        "key:summary": 1.0,
+        "key:urgency": 1.0,
+        "latency": 1.0,
+        "nomatch:^(sure|here'?s|certainly)": 1.0
+      },
+      "hint": {
+        "category": "bug",
+        "urgency": "high"
+      },
+      "noise_floor": 0.0,
+      "prompt": "You are a support triage assistant.\n\nClassify the ticket below.\n\n<ticket>\nEverything is down, the dashboard will not load at all. Urgent.\n</ticket>\n\nReturn category (one of: billing, bug, feature_request, account, other),\nurgency (one of: low, medium, high), and a one-line summary.\n\nRespond with ONLY valid JSON. No markdown fence, no prose.\n",
+      "runs": [
+        {
+          "cost_usd": 0.000342,
+          "latency_ms": 408.9,
+          "text": "{\"category\": \"other\", \"urgency\": \"high\", \"summary\": \"everything is down, the dashboard will not load at all. urgent.\"}",
+          "tokens": 114
+        },
+        {
+          "cost_usd": 0.000342,
+          "latency_ms": 399.6,
+          "text": "{\"category\": \"other\", \"urgency\": \"high\", \"summary\": \"everything is down, the dashboard will not load at all. urgent.\"}",
+          "tokens": 114
+        },
+        {
+          "cost_usd": 0.000342,
+          "latency_ms": 431.6,
+          "text": "{\"category\": \"other\", \"urgency\": \"high\", \"summary\": \"everything is down, the dashboard will not load at all. urgent.\"}",
+          "tokens": 114
+        }
+      ]
+    },
+    "t020": {
+      "assert_rates": {
+        "cost": 1.0,
+        "enum:category": 1.0,
+        "enum:urgency": 1.0,
+        "json_bare": 0.6666666666666666,
+        "json_parses": 1.0,
+        "key:category": 1.0,
+        "key:summary": 1.0,
+        "key:urgency": 1.0,
+        "latency": 1.0,
+        "nomatch:^(sure|here'?s|certainly)": 1.0
+      },
+      "hint": {
+        "category": "bug",
+        "urgency": "low"
+      },
+      "noise_floor": 0.03,
+      "prompt": "You are a support triage assistant.\n\nClassify the ticket below.\n\n<ticket>\nPagination skips the last row on every page.\n</ticket>\n\nReturn category (one of: billing, bug, feature_request, account, other),\nurgency (one of: low, medium, high), and a one-line summary.\n\nRespond with ONLY valid JSON. No markdown fence, no prose.\n",
+      "runs": [
+        {
+          "cost_usd": 0.000315,
+          "latency_ms": 414.3,
+          "text": "{\"category\": \"other\", \"urgency\": \"low\", \"summary\": \"pagination skips the last row on every page.\"}",
+          "tokens": 105
+        },
+        {
+          "cost_usd": 0.000324,
+          "latency_ms": 344.1,
+          "text": "```json\n{\"category\": \"other\", \"urgency\": \"low\", \"summary\": \"pagination skips the last row on every page.\"}\n```",
+          "tokens": 108
+        },
+        {
+          "cost_usd": 0.000315,
+          "latency_ms": 327.7,
+          "text": "{\"category\": \"other\", \"urgency\": \"low\", \"summary\": \"pagination skips the last row on every page.\"}",
+          "tokens": 105
+        }
+      ]
+    },
+    "t021": {
+      "assert_rates": {
+        "cost": 1.0,
+        "enum:category": 1.0,
+        "enum:urgency": 1.0,
+        "json_bare": 0.3333333333333333,
+        "json_parses": 1.0,
+        "key:category": 1.0,
+        "key:summary": 1.0,
+        "key:urgency": 1.0,
+        "latency": 1.0,
+        "nomatch:^(sure|here'?s|certainly)": 1.0
+      },
+      "hint": {
+        "category": "feature_request",
+        "urgency": "low"
+      },
+      "noise_floor": 0.0224,
+      "prompt": "You are a support triage assistant.\n\nClassify the ticket below.\n\n<ticket>\nWould be nice if you could add bulk delete for archived items.\n</ticket>\n\nReturn category (one of: billing, bug, feature_request, account, other),\nurgency (one of: low, medium, high), and a one-line summary.\n\nRespond with ONLY valid JSON. No markdown fence, no prose.\n",
+      "runs": [
+        {
+          "cost_usd": 0.000348,
+          "latency_ms": 440.7,
+          "text": "{\"category\": \"feature_request\", \"urgency\": \"low\", \"summary\": \"would be nice if you could add bulk delete for archived items.\"}",
+          "tokens": 116
+        },
+        {
+          "cost_usd": 0.000357,
+          "latency_ms": 441.5,
+          "text": "```json\n{\"category\": \"feature_request\", \"urgency\": \"low\", \"summary\": \"would be nice if you could add bulk delete for archived items.\"}\n```",
+          "tokens": 119
+        },
+        {
+          "cost_usd": 0.000357,
+          "latency_ms": 380.3,
+          "text": "```json\n{\"category\": \"feature_request\", \"urgency\": \"low\", \"summary\": \"would be nice if you could add bulk delete for archived items.\"}\n```",
+          "tokens": 119
+        }
+      ]
+    },
+    "t022": {
+      "assert_rates": {
+        "cost": 1.0,
+        "enum:category": 1.0,
+        "enum:urgency": 1.0,
+        "json_bare": 1.0,
+        "json_parses": 1.0,
+        "key:category": 1.0,
+        "key:summary": 1.0,
+        "key:urgency": 1.0,
+        "latency": 1.0,
+        "nomatch:^(sure|here'?s|certainly)": 1.0
+      },
+      "hint": {
+        "category": "feature_request",
+        "urgency": "low"
+      },
+      "noise_floor": -0.0,
+      "prompt": "You are a support triage assistant.\n\nClassify the ticket below.\n\n<ticket>\nPlease add support for SSO with Okta.\n</ticket>\n\nReturn category (one of: billing, bug, feature_request, account, other),\nurgency (one of: low, medium, high), and a one-line summary.\n\nRespond with ONLY valid JSON. No markdown fence, no prose.\n",
+      "runs": [
+        {
+          "cost_usd": 0.000312,
+          "latency_ms": 364.9,
+          "text": "{\"category\": \"feature_request\", \"urgency\": \"low\", \"summary\": \"please add support for sso with okta.\"}",
+          "tokens": 104
+        },
+        {
+          "cost_usd": 0.000312,
+          "latency_ms": 345.8,
+          "text": "{\"category\": \"feature_request\", \"urgency\": \"low\", \"summary\": \"please add support for sso with okta.\"}",
+          "tokens": 104
+        },
+        {
+          "cost_usd": 0.000312,
+          "latency_ms": 330.1,
+          "text": "{\"category\": \"feature_request\", \"urgency\": \"low\", \"summary\": \"please add support for sso with okta.\"}",
+          "tokens": 104
+        }
+      ]
+    },
+    "t023": {
+      "assert_rates": {
+        "cost": 1.0,
+        "enum:category": 1.0,
+        "enum:urgency": 1.0,
+        "json_bare": 1.0,
+        "json_parses": 1.0,
+        "key:category": 1.0,
+        "key:summary": 1.0,
+        "key:urgency": 1.0,
+        "latency": 1.0,
+        "nomatch:^(sure|here'?s|certainly)": 1.0
+      },
+      "hint": {
+        "category": "feature_request",
+        "urgency": "low"
+      },
+      "noise_floor": 0.0419,
+      "prompt": "You are a support triage assistant.\n\nClassify the ticket below.\n\n<ticket>\nAny chance of a dark mode for the mobile app?\n</ticket>\n\nReturn category (one of: billing, bug, feature_request, account, other),\nurgency (one of: low, medium, high), and a one-line summary.\n\nRespond with ONLY valid JSON. No markdown fence, no prose.\n",
+      "runs": [
+        {
+          "cost_usd": 0.000315,
+          "latency_ms": 357.4,
+          "text": "{\"category\": \"other\", \"urgency\": \"low\", \"summary\": \"any chance of a dark mode for the mobile app?\"}",
+          "tokens": 105
+        },
+        {
+          "cost_usd": 0.000315,
+          "latency_ms": 384.6,
+          "text": "{\"category\": \"other\", \"urgency\": \"low\", \"summary\": \"any chance of a dark mode for the mobile app?\"}",
+          "tokens": 105
+        },
+        {
+          "cost_usd": 0.000318,
+          "latency_ms": 375.4,
+          "text": "{\"category\": \"other\", \"urgency\": \"medium\", \"summary\": \"any chance of a dark mode for the mobile app?\"}",
+          "tokens": 106
+        }
+      ]
+    },
+    "t024": {
+      "assert_rates": {
+        "cost": 1.0,
+        "enum:category": 1.0,
+        "enum:urgency": 1.0,
+        "json_bare": 1.0,
+        "json_parses": 1.0,
+        "key:category": 1.0,
+        "key:summary": 1.0,
+        "key:urgency": 1.0,
+        "latency": 1.0,
+        "nomatch:^(sure|here'?s|certainly)": 1.0
+      },
+      "hint": {
+        "category": "feature_request",
+        "urgency": "low"
+      },
+      "noise_floor": 0.0,
+      "prompt": "You are a support triage assistant.\n\nClassify the ticket below.\n\n<ticket>\nI wish there was a way to schedule reports weekly.\n</ticket>\n\nReturn category (one of: billing, bug, feature_request, account, other),\nurgency (one of: low, medium, high), and a one-line summary.\n\nRespond with ONLY valid JSON. No markdown fence, no prose.\n",
+      "runs": [
+        {
+          "cost_usd": 0.00033,
+          "latency_ms": 335.6,
+          "text": "{\"category\": \"feature_request\", \"urgency\": \"low\", \"summary\": \"i wish there was a way to schedule reports weekly.\"}",
+          "tokens": 110
+        },
+        {
+          "cost_usd": 0.00033,
+          "latency_ms": 384.5,
+          "text": "{\"category\": \"feature_request\", \"urgency\": \"low\", \"summary\": \"i wish there was a way to schedule reports weekly.\"}",
+          "tokens": 110
+        },
+        {
+          "cost_usd": 0.00033,
+          "latency_ms": 357.0,
+          "text": "{\"category\": \"feature_request\", \"urgency\": \"low\", \"summary\": \"i wish there was a way to schedule reports weekly.\"}",
+          "tokens": 110
+        }
+      ]
+    },
+    "t025": {
+      "assert_rates": {
+        "cost": 1.0,
+        "enum:category": 1.0,
+        "enum:urgency": 1.0,
+        "json_bare": 1.0,
+        "json_parses": 1.0,
+        "key:category": 1.0,
+        "key:summary": 1.0,
+        "key:urgency": 1.0,
+        "latency": 1.0,
+        "nomatch:^(sure|here'?s|certainly)": 1.0
+      },
+      "hint": {
+        "category": "feature_request",
+        "urgency": "low"
+      },
+      "noise_floor": 0.0374,
+      "prompt": "You are a support triage assistant.\n\nClassify the ticket below.\n\n<ticket>\nSuggestion: let us tag teammates in comments.\n</ticket>\n\nReturn category (one of: billing, bug, feature_request, account, other),\nurgency (one of: low, medium, high), and a one-line summary.\n\nRespond with ONLY valid JSON. No markdown fence, no prose.\n",
+      "runs": [
+        {
+          "cost_usd": 0.000327,
+          "latency_ms": 433.7,
+          "text": "{\"category\": \"feature_request\", \"urgency\": \"medium\", \"summary\": \"suggestion: let us tag teammates in comments.\"}",
+          "tokens": 109
+        },
+        {
+          "cost_usd": 0.000324,
+          "latency_ms": 420.3,
+          "text": "{\"category\": \"feature_request\", \"urgency\": \"low\", \"summary\": \"suggestion: let us tag teammates in comments.\"}",
+          "tokens": 108
+        },
+        {
+          "cost_usd": 0.000324,
+          "latency_ms": 433.4,
+          "text": "{\"category\": \"feature_request\", \"urgency\": \"low\", \"summary\": \"suggestion: let us tag teammates in comments.\"}",
+          "tokens": 108
+        }
+      ]
+    },
+    "t026": {
+      "assert_rates": {
+        "cost": 1.0,
+        "enum:category": 1.0,
+        "enum:urgency": 1.0,
+        "json_bare": 1.0,
+        "json_parses": 1.0,
+        "key:category": 1.0,
+        "key:summary": 1.0,
+        "key:urgency": 1.0,
+        "latency": 1.0,
+        "nomatch:^(sure|here'?s|certainly)": 1.0
+      },
+      "hint": {
+        "category": "feature_request",
+        "urgency": "low"
+      },
+      "noise_floor": -0.0,
+      "prompt": "You are a support triage assistant.\n\nClassify the ticket below.\n\n<ticket>\nCan you add a Slack integration for notifications?\n</ticket>\n\nReturn category (one of: billing, bug, feature_request, account, other),\nurgency (one of: low, medium, high), and a one-line summary.\n\nRespond with ONLY valid JSON. No markdown fence, no prose.\n",
+      "runs": [
+        {
+          "cost_usd": 0.00033,
+          "latency_ms": 394.0,
+          "text": "{\"category\": \"feature_request\", \"urgency\": \"low\", \"summary\": \"can you add a slack integration for notifications?\"}",
+          "tokens": 110
+        },
+        {
+          "cost_usd": 0.00033,
+          "latency_ms": 410.3,
+          "text": "{\"category\": \"feature_request\", \"urgency\": \"low\", \"summary\": \"can you add a slack integration for notifications?\"}",
+          "tokens": 110
+        },
+        {
+          "cost_usd": 0.00033,
+          "latency_ms": 404.2,
+          "text": "{\"category\": \"feature_request\", \"urgency\": \"low\", \"summary\": \"can you add a slack integration for notifications?\"}",
+          "tokens": 110
+        }
+      ]
+    },
+    "t027": {
+      "assert_rates": {
+        "cost": 1.0,
+        "enum:category": 1.0,
+        "enum:urgency": 1.0,
+        "json_bare": 1.0,
+        "json_parses": 1.0,
+        "key:category": 1.0,
+        "key:summary": 1.0,
+        "key:urgency": 1.0,
+        "latency": 1.0,
+        "nomatch:^(sure|here'?s|certainly)": 1.0
+      },
+      "hint": {
+        "category": "feature_request",
+        "urgency": "low"
+      },
+      "noise_floor": 0.0,
+      "prompt": "You are a support triage assistant.\n\nClassify the ticket below.\n\n<ticket>\nIt would help a lot to have keyboard shortcuts for navigation.\n</ticket>\n\nReturn category (one of: billing, bug, feature_request, account, other),\nurgency (one of: low, medium, high), and a one-line summary.\n\nRespond with ONLY valid JSON. No markdown fence, no prose.\n",
+      "runs": [
+        {
+          "cost_usd": 0.000342,
+          "latency_ms": 431.5,
+          "text": "{\"category\": \"other\", \"urgency\": \"low\", \"summary\": \"it would help a lot to have keyboard shortcuts for navigation.\"}",
+          "tokens": 114
+        },
+        {
+          "cost_usd": 0.000342,
+          "latency_ms": 387.9,
+          "text": "{\"category\": \"other\", \"urgency\": \"low\", \"summary\": \"it would help a lot to have keyboard shortcuts for navigation.\"}",
+          "tokens": 114
+        },
+        {
+          "cost_usd": 0.000342,
+          "latency_ms": 356.9,
+          "text": "{\"category\": \"other\", \"urgency\": \"low\", \"summary\": \"it would help a lot to have keyboard shortcuts for navigation.\"}",
+          "tokens": 114
+        }
+      ]
+    },
+    "t028": {
+      "assert_rates": {
+        "cost": 1.0,
+        "enum:category": 1.0,
+        "enum:urgency": 1.0,
+        "json_bare": 1.0,
+        "json_parses": 1.0,
+        "key:category": 1.0,
+        "key:summary": 1.0,
+        "key:urgency": 1.0,
+        "latency": 1.0,
+        "nomatch:^(sure|here'?s|certainly)": 1.0
+      },
+      "hint": {
+        "category": "feature_request",
+        "urgency": "low"
+      },
+      "noise_floor": 0.0356,
+      "prompt": "You are a support triage assistant.\n\nClassify the ticket below.\n\n<ticket>\nPlease add an API endpoint for listing workspaces.\n</ticket>\n\nReturn category (one of: billing, bug, feature_request, account, other),\nurgency (one of: low, medium, high), and a one-line summary.\n\nRespond with ONLY valid JSON. No markdown fence, no prose.\n",
+      "runs": [
+        {
+          "cost_usd": 0.00033,
+          "latency_ms": 357.8,
+          "text": "{\"category\": \"feature_request\", \"urgency\": \"low\", \"summary\": \"please add an api endpoint for listing workspaces.\"}",
+          "tokens": 110
+        },
+        {
+          "cost_usd": 0.00033,
+          "latency_ms": 450.8,
+          "text": "{\"category\": \"feature_request\", \"urgency\": \"low\", \"summary\": \"please add an api endpoint for listing workspaces.\"}",
+          "tokens": 110
+        },
+        {
+          "cost_usd": 0.000333,
+          "latency_ms": 455.4,
+          "text": "{\"category\": \"feature_request\", \"urgency\": \"medium\", \"summary\": \"please add an api endpoint for listing workspaces.\"}",
+          "tokens": 111
+        }
+      ]
+    },
+    "t029": {
+      "assert_rates": {
+        "cost": 1.0,
+        "enum:category": 1.0,
+        "enum:urgency": 1.0,
+        "json_bare": 1.0,
+        "json_parses": 1.0,
+        "key:category": 1.0,
+        "key:summary": 1.0,
+        "key:urgency": 1.0,
+        "latency": 1.0,
+        "nomatch:^(sure|here'?s|certainly)": 1.0
+      },
+      "hint": {
+        "category": "account",
+        "urgency": "high"
+      },
+      "noise_floor": 0.0,
+      "prompt": "You are a support triage assistant.\n\nClassify the ticket below.\n\n<ticket>\nI am locked out after too many login attempts, please reset.\n</ticket>\n\nReturn category (one of: billing, bug, feature_request, account, other),\nurgency (one of: low, medium, high), and a one-line summary.\n\nRespond with ONLY valid JSON. No markdown fence, no prose.\n",
+      "runs": [
+        {
+          "cost_usd": 0.000342,
+          "latency_ms": 437.7,
+          "text": "{\"category\": \"account\", \"urgency\": \"low\", \"summary\": \"i am locked out after too many login attempts, please reset.\"}",
+          "tokens": 114
+        },
+        {
+          "cost_usd": 0.000342,
+          "latency_ms": 438.1,
+          "text": "{\"category\": \"account\", \"urgency\": \"low\", \"summary\": \"i am locked out after too many login attempts, please reset.\"}",
+          "tokens": 114
+        },
+        {
+          "cost_usd": 0.000342,
+          "latency_ms": 381.7,
+          "text": "{\"category\": \"account\", \"urgency\": \"low\", \"summary\": \"i am locked out after too many login attempts, please reset.\"}",
+          "tokens": 114
+        }
+      ]
+    },
+    "t030": {
+      "assert_rates": {
+        "cost": 1.0,
+        "enum:category": 1.0,
+        "enum:urgency": 1.0,
+        "json_bare": 0.6666666666666666,
+        "json_parses": 1.0,
+        "key:category": 1.0,
+        "key:summary": 1.0,
+        "key:urgency": 1.0,
+        "latency": 1.0,
+        "nomatch:^(sure|here'?s|certainly)": 1.0
+      },
+      "hint": {
+        "category": "account",
+        "urgency": "low"
+      },
+      "noise_floor": 0.0276,
+      "prompt": "You are a support triage assistant.\n\nClassify the ticket below.\n\n<ticket>\nHow do I change the email address on my account?\n</ticket>\n\nReturn category (one of: billing, bug, feature_request, account, other),\nurgency (one of: low, medium, high), and a one-line summary.\n\nRespond with ONLY valid JSON. No markdown fence, no prose.\n",
+      "runs": [
+        {
+          "cost_usd": 0.000324,
+          "latency_ms": 449.7,
+          "text": "{\"category\": \"account\", \"urgency\": \"low\", \"summary\": \"how do i change the email address on my account?\"}",
+          "tokens": 108
+        },
+        {
+          "cost_usd": 0.000333,
+          "latency_ms": 355.5,
+          "text": "```json\n{\"category\": \"account\", \"urgency\": \"low\", \"summary\": \"how do i change the email address on my account?\"}\n```",
+          "tokens": 111
+        },
+        {
+          "cost_usd": 0.000324,
+          "latency_ms": 368.8,
+          "text": "{\"category\": \"account\", \"urgency\": \"low\", \"summary\": \"how do i change the email address on my account?\"}",
+          "tokens": 108
+        }
+      ]
+    },
+    "t031": {
+      "assert_rates": {
+        "cost": 1.0,
+        "enum:category": 1.0,
+        "enum:urgency": 1.0,
+        "json_bare": 1.0,
+        "json_parses": 1.0,
+        "key:category": 1.0,
+        "key:summary": 1.0,
+        "key:urgency": 1.0,
+        "latency": 1.0,
+        "nomatch:^(sure|here'?s|certainly)": 1.0
+      },
+      "hint": {
+        "category": "account",
+        "urgency": "high"
+      },
+      "noise_floor": -0.0,
+      "prompt": "You are a support triage assistant.\n\nClassify the ticket below.\n\n<ticket>\nI lost my 2fa device and cannot sign in.\n</ticket>\n\nReturn category (one of: billing, bug, feature_request, account, other),\nurgency (one of: low, medium, high), and a one-line summary.\n\nRespond with ONLY valid JSON. No markdown fence, no prose.\n",
+      "runs": [
+        {
+          "cost_usd": 0.000312,
+          "latency_ms": 396.5,
+          "text": "{\"category\": \"account\", \"urgency\": \"high\", \"summary\": \"i lost my 2fa device and cannot sign in.\"}",
+          "tokens": 104
+        },
+        {
+          "cost_usd": 0.000312,
+          "latency_ms": 426.5,
+          "text": "{\"category\": \"account\", \"urgency\": \"high\", \"summary\": \"i lost my 2fa device and cannot sign in.\"}",
+          "tokens": 104
+        },
+        {
+          "cost_usd": 0.000312,
+          "latency_ms": 346.1,
+          "text": "{\"category\": \"account\", \"urgency\": \"high\", \"summary\": \"i lost my 2fa device and cannot sign in.\"}",
+          "tokens": 104
+        }
+      ]
+    },
+    "t032": {
+      "assert_rates": {
+        "cost": 1.0,
+        "enum:category": 1.0,
+        "enum:urgency": 1.0,
+        "json_bare": 1.0,
+        "json_parses": 1.0,
+        "key:category": 1.0,
+        "key:summary": 1.0,
+        "key:urgency": 1.0,
+        "latency": 1.0,
+        "nomatch:^(sure|here'?s|certainly)": 1.0
+      },
+      "hint": {
+        "category": "account",
+        "urgency": "low"
+      },
+      "noise_floor": 0.0377,
+      "prompt": "You are a support triage assistant.\n\nClassify the ticket below.\n\n<ticket>\nPlease delete my account and all associated data.\n</ticket>\n\nReturn category (one of: billing, bug, feature_request, account, other),\nurgency (one of: low, medium, high), and a one-line summary.\n\nRespond with ONLY valid JSON. No markdown fence, no prose.\n",
+      "runs": [
+        {
+          "cost_usd": 0.000327,
+          "latency_ms": 397.1,
+          "text": "{\"category\": \"account\", \"urgency\": \"medium\", \"summary\": \"please delete my account and all associated data.\"}",
+          "tokens": 109
+        },
+        {
+          "cost_usd": 0.000327,
+          "latency_ms": 429.8,
+          "text": "{\"category\": \"account\", \"urgency\": \"medium\", \"summary\": \"please delete my account and all associated data.\"}",
+          "tokens": 109
+        },
+        {
+          "cost_usd": 0.000324,
+          "latency_ms": 359.3,
+          "text": "{\"category\": \"account\", \"urgency\": \"low\", \"summary\": \"please delete my account and all associated data.\"}",
+          "tokens": 108
+        }
+      ]
+    },
+    "t033": {
+      "assert_rates": {
+        "cost": 1.0,
+        "enum:category": 1.0,
+        "enum:urgency": 1.0,
+        "json_bare": 1.0,
+        "json_parses": 1.0,
+        "key:category": 1.0,
+        "key:summary": 1.0,
+        "key:urgency": 1.0,
+        "latency": 1.0,
+        "nomatch:^(sure|here'?s|certainly)": 1.0
+      },
+      "hint": {
+        "category": "account",
+        "urgency": "low"
+      },
+      "noise_floor": 0.0443,
+      "prompt": "You are a support triage assistant.\n\nClassify the ticket below.\n\n<ticket>\nMy password reset email never arrives.\n</ticket>\n\nReturn category (one of: billing, bug, feature_request, account, other),\nurgency (one of: low, medium, high), and a one-line summary.\n\nRespond with ONLY valid JSON. No markdown fence, no prose.\n",
+      "runs": [
+        {
+          "cost_usd": 0.000306,
+          "latency_ms": 351.5,
+          "text": "{\"category\": \"account\", \"urgency\": \"low\", \"summary\": \"my password reset email never arrives.\"}",
+          "tokens": 102
+        },
+        {
+          "cost_usd": 0.000309,
+          "latency_ms": 359.6,
+          "text": "{\"category\": \"account\", \"urgency\": \"medium\", \"summary\": \"my password reset email never arrives.\"}",
+          "tokens": 103
+        },
+        {
+          "cost_usd": 0.000306,
+          "latency_ms": 418.9,
+          "text": "{\"category\": \"account\", \"urgency\": \"low\", \"summary\": \"my password reset email never arrives.\"}",
+          "tokens": 102
+        }
+      ]
+    },
+    "t034": {
+      "assert_rates": {
+        "cost": 1.0,
+        "enum:category": 1.0,
+        "enum:urgency": 1.0,
+        "json_bare": 1.0,
+        "json_parses": 1.0,
+        "key:category": 1.0,
+        "key:summary": 1.0,
+        "key:urgency": 1.0,
+        "latency": 1.0,
+        "nomatch:^(sure|here'?s|certainly)": 1.0
+      },
+      "hint": {
+        "category": "account",
+        "urgency": "low"
+      },
+      "noise_floor": 0.0,
+      "prompt": "You are a support triage assistant.\n\nClassify the ticket below.\n\n<ticket>\nI need to transfer ownership of the workspace to a colleague.\n</ticket>\n\nReturn category (one of: billing, bug, feature_request, account, other),\nurgency (one of: low, medium, high), and a one-line summary.\n\nRespond with ONLY valid JSON. No markdown fence, no prose.\n",
+      "runs": [
+        {
+          "cost_usd": 0.000339,
+          "latency_ms": 364.6,
+          "text": "{\"category\": \"other\", \"urgency\": \"low\", \"summary\": \"i need to transfer ownership of the workspace to a colleague.\"}",
+          "tokens": 113
+        },
+        {
+          "cost_usd": 0.000339,
+          "latency_ms": 428.4,
+          "text": "{\"category\": \"other\", \"urgency\": \"low\", \"summary\": \"i need to transfer ownership of the workspace to a colleague.\"}",
+          "tokens": 113
+        },
+        {
+          "cost_usd": 0.000339,
+          "latency_ms": 343.7,
+          "text": "{\"category\": \"other\", \"urgency\": \"low\", \"summary\": \"i need to transfer ownership of the workspace to a colleague.\"}",
+          "tokens": 113
+        }
+      ]
+    },
+    "t035": {
+      "assert_rates": {
+        "cost": 1.0,
+        "enum:category": 1.0,
+        "enum:urgency": 1.0,
+        "json_bare": 1.0,
+        "json_parses": 1.0,
+        "key:category": 1.0,
+        "key:summary": 1.0,
+        "key:urgency": 1.0,
+        "latency": 1.0,
+        "nomatch:^(sure|here'?s|certainly)": 1.0
+      },
+      "hint": {
+        "category": "account",
+        "urgency": "low"
+      },
+      "noise_floor": 0.0,
+      "prompt": "You are a support triage assistant.\n\nClassify the ticket below.\n\n<ticket>\nCan I merge two accounts that use different emails?\n</ticket>\n\nReturn category (one of: billing, bug, feature_request, account, other),\nurgency (one of: low, medium, high), and a one-line summary.\n\nRespond with ONLY valid JSON. No markdown fence, no prose.\n",
+      "runs": [
+        {
+          "cost_usd": 0.000324,
+          "latency_ms": 432.9,
+          "text": "{\"category\": \"other\", \"urgency\": \"low\", \"summary\": \"can i merge two accounts that use different emails?\"}",
+          "tokens": 108
+        },
+        {
+          "cost_usd": 0.000324,
+          "latency_ms": 433.6,
+          "text": "{\"category\": \"other\", \"urgency\": \"low\", \"summary\": \"can i merge two accounts that use different emails?\"}",
+          "tokens": 108
+        },
+        {
+          "cost_usd": 0.000324,
+          "latency_ms": 417.0,
+          "text": "{\"category\": \"other\", \"urgency\": \"low\", \"summary\": \"can i merge two accounts that use different emails?\"}",
+          "tokens": 108
+        }
+      ]
+    },
+    "t036": {
+      "assert_rates": {
+        "cost": 1.0,
+        "enum:category": 1.0,
+        "enum:urgency": 1.0,
+        "json_bare": 1.0,
+        "json_parses": 1.0,
+        "key:category": 1.0,
+        "key:summary": 1.0,
+        "key:urgency": 1.0,
+        "latency": 1.0,
+        "nomatch:^(sure|here'?s|certainly)": 1.0
+      },
+      "hint": {
+        "category": "account",
+        "urgency": "medium"
+      },
+      "noise_floor": 0.0358,
+      "prompt": "You are a support triage assistant.\n\nClassify the ticket below.\n\n<ticket>\nLogin redirects me in a loop and never completes.\n</ticket>\n\nReturn category (one of: billing, bug, feature_request, account, other),\nurgency (one of: low, medium, high), and a one-line summary.\n\nRespond with ONLY valid JSON. No markdown fence, no prose.\n",
+      "runs": [
+        {
+          "cost_usd": 0.000324,
+          "latency_ms": 423.4,
+          "text": "{\"category\": \"account\", \"urgency\": \"low\", \"summary\": \"login redirects me in a loop and never completes.\"}",
+          "tokens": 108
+        },
+        {
+          "cost_usd": 0.000327,
+          "latency_ms": 446.7,
+          "text": "{\"category\": \"account\", \"urgency\": \"medium\", \"summary\": \"login redirects me in a loop and never completes.\"}",
+          "tokens": 109
+        },
+        {
+          "cost_usd": 0.000324,
+          "latency_ms": 358.0,
+          "text": "{\"category\": \"account\", \"urgency\": \"low\", \"summary\": \"login redirects me in a loop and never completes.\"}",
+          "tokens": 108
+        }
+      ]
+    },
+    "t037": {
+      "assert_rates": {
+        "cost": 1.0,
+        "enum:category": 1.0,
+        "enum:urgency": 1.0,
+        "json_bare": 1.0,
+        "json_parses": 1.0,
+        "key:category": 1.0,
+        "key:summary": 1.0,
+        "key:urgency": 1.0,
+        "latency": 1.0,
+        "nomatch:^(sure|here'?s|certainly)": 1.0
+      },
+      "hint": {
+        "category": "other",
+        "urgency": "low"
+      },
+      "noise_floor": 0.0387,
+      "prompt": "You are a support triage assistant.\n\nClassify the ticket below.\n\n<ticket>\nJust wanted to say the new release is great, thanks team.\n</ticket>\n\nReturn category (one of: billing, bug, feature_request, account, other),\nurgency (one of: low, medium, high), and a one-line summary.\n\nRespond with ONLY valid JSON. No markdown fence, no prose.\n",
+      "runs": [
+        {
+          "cost_usd": 0.000336,
+          "latency_ms": 424.7,
+          "text": "{\"category\": \"other\", \"urgency\": \"medium\", \"summary\": \"just wanted to say the new release is great, thanks team.\"}",
+          "tokens": 112
+        },
+        {
+          "cost_usd": 0.000333,
+          "latency_ms": 426.9,
+          "text": "{\"category\": \"other\", \"urgency\": \"low\", \"summary\": \"just wanted to say the new release is great, thanks team.\"}",
+          "tokens": 111
+        },
+        {
+          "cost_usd": 0.000333,
+          "latency_ms": 335.6,
+          "text": "{\"category\": \"other\", \"urgency\": \"low\", \"summary\": \"just wanted to say the new release is great, thanks team.\"}",
+          "tokens": 111
+        }
+      ]
+    },
+    "t038": {
+      "assert_rates": {
+        "cost": 1.0,
+        "enum:category": 1.0,
+        "enum:urgency": 1.0,
+        "json_bare": 1.0,
+        "json_parses": 1.0,
+        "key:category": 1.0,
+        "key:summary": 1.0,
+        "key:urgency": 1.0,
+        "latency": 1.0,
+        "nomatch:^(sure|here'?s|certainly)": 1.0
+      },
+      "hint": {
+        "category": "other",
+        "urgency": "low"
+      },
+      "noise_floor": 0.0,
+      "prompt": "You are a support triage assistant.\n\nClassify the ticket below.\n\n<ticket>\nDo you have a status page I can subscribe to?\n</ticket>\n\nReturn category (one of: billing, bug, feature_request, account, other),\nurgency (one of: low, medium, high), and a one-line summary.\n\nRespond with ONLY valid JSON. No markdown fence, no prose.\n",
+      "runs": [
+        {
+          "cost_usd": 0.000315,
+          "latency_ms": 328.0,
+          "text": "{\"category\": \"other\", \"urgency\": \"low\", \"summary\": \"do you have a status page i can subscribe to?\"}",
+          "tokens": 105
+        },
+        {
+          "cost_usd": 0.000315,
+          "latency_ms": 372.9,
+          "text": "{\"category\": \"other\", \"urgency\": \"low\", \"summary\": \"do you have a status page i can subscribe to?\"}",
+          "tokens": 105
+        },
+        {
+          "cost_usd": 0.000315,
+          "latency_ms": 336.2,
+          "text": "{\"category\": \"other\", \"urgency\": \"low\", \"summary\": \"do you have a status page i can subscribe to?\"}",
+          "tokens": 105
+        }
+      ]
+    },
+    "t039": {
+      "assert_rates": {
+        "cost": 1.0,
+        "enum:category": 1.0,
+        "enum:urgency": 1.0,
+        "json_bare": 1.0,
+        "json_parses": 1.0,
+        "key:category": 1.0,
+        "key:summary": 1.0,
+        "key:urgency": 1.0,
+        "latency": 1.0,
+        "nomatch:^(sure|here'?s|certainly)": 1.0
+      },
+      "hint": {
+        "category": "other",
+        "urgency": "low"
+      },
+      "noise_floor": 0.0,
+      "prompt": "You are a support triage assistant.\n\nClassify the ticket below.\n\n<ticket>\nWhere can I find your data processing agreement?\n</ticket>\n\nReturn category (one of: billing, bug, feature_request, account, other),\nurgency (one of: low, medium, high), and a one-line summary.\n\nRespond with ONLY valid JSON. No markdown fence, no prose.\n",
+      "runs": [
+        {
+          "cost_usd": 0.000321,
+          "latency_ms": 407.8,
+          "text": "{\"category\": \"other\", \"urgency\": \"low\", \"summary\": \"where can i find your data processing agreement?\"}",
+          "tokens": 107
+        },
+        {
+          "cost_usd": 0.000321,
+          "latency_ms": 431.7,
+          "text": "{\"category\": \"other\", \"urgency\": \"low\", \"summary\": \"where can i find your data processing agreement?\"}",
+          "tokens": 107
+        },
+        {
+          "cost_usd": 0.000321,
+          "latency_ms": 443.8,
+          "text": "{\"category\": \"other\", \"urgency\": \"low\", \"summary\": \"where can i find your data processing agreement?\"}",
+          "tokens": 107
+        }
+      ]
+    },
+    "t040": {
+      "assert_rates": {
+        "cost": 1.0,
+        "enum:category": 1.0,
+        "enum:urgency": 1.0,
+        "json_bare": 0.6666666666666666,
+        "json_parses": 1.0,
+        "key:category": 1.0,
+        "key:summary": 1.0,
+        "key:urgency": 1.0,
+        "latency": 1.0,
+        "nomatch:^(sure|here'?s|certainly)": 1.0
+      },
+      "hint": {
+        "category": "other",
+        "urgency": "low"
+      },
+      "noise_floor": 0.0289,
+      "prompt": "You are a support triage assistant.\n\nClassify the ticket below.\n\n<ticket>\nAre you hiring for backend roles right now?\n</ticket>\n\nReturn category (one of: billing, bug, feature_request, account, other),\nurgency (one of: low, medium, high), and a one-line summary.\n\nRespond with ONLY valid JSON. No markdown fence, no prose.\n",
+      "runs": [
+        {
+          "cost_usd": 0.000312,
+          "latency_ms": 416.9,
+          "text": "{\"category\": \"other\", \"urgency\": \"low\", \"summary\": \"are you hiring for backend roles right now?\"}",
+          "tokens": 104
+        },
+        {
+          "cost_usd": 0.000312,
+          "latency_ms": 436.5,
+          "text": "{\"category\": \"other\", \"urgency\": \"low\", \"summary\": \"are you hiring for backend roles right now?\"}",
+          "tokens": 104
+        },
+        {
+          "cost_usd": 0.000321,
+          "latency_ms": 444.2,
+          "text": "```json\n{\"category\": \"other\", \"urgency\": \"low\", \"summary\": \"are you hiring for backend roles right now?\"}\n```",
+          "tokens": 107
+        }
+      ]
+    },
+    "t041": {
+      "assert_rates": {
+        "cost": 1.0,
+        "enum:category": 1.0,
+        "enum:urgency": 1.0,
+        "json_bare": 1.0,
+        "json_parses": 1.0,
+        "key:category": 1.0,
+        "key:summary": 1.0,
+        "key:urgency": 1.0,
+        "latency": 1.0,
+        "nomatch:^(sure|here'?s|certainly)": 1.0
+      },
+      "hint": {
+        "category": "other",
+        "urgency": "low"
+      },
+      "noise_floor": 0.0,
+      "prompt": "You are a support triage assistant.\n\nClassify the ticket below.\n\n<ticket>\nWhat is your uptime guarantee on the business plan?\n</ticket>\n\nReturn category (one of: billing, bug, feature_request, account, other),\nurgency (one of: low, medium, high), and a one-line summary.\n\nRespond with ONLY valid JSON. No markdown fence, no prose.\n",
+      "runs": [
+        {
+          "cost_usd": 0.000324,
+          "latency_ms": 376.6,
+          "text": "{\"category\": \"other\", \"urgency\": \"low\", \"summary\": \"what is your uptime guarantee on the business plan?\"}",
+          "tokens": 108
+        },
+        {
+          "cost_usd": 0.000324,
+          "latency_ms": 370.2,
+          "text": "{\"category\": \"other\", \"urgency\": \"low\", \"summary\": \"what is your uptime guarantee on the business plan?\"}",
+          "tokens": 108
+        },
+        {
+          "cost_usd": 0.000324,
+          "latency_ms": 446.8,
+          "text": "{\"category\": \"other\", \"urgency\": \"low\", \"summary\": \"what is your uptime guarantee on the business plan?\"}",
+          "tokens": 108
+        }
+      ]
+    },
+    "t042": {
+      "assert_rates": {
+        "cost": 1.0,
+        "enum:category": 1.0,
+        "enum:urgency": 1.0,
+        "json_bare": 1.0,
+        "json_parses": 1.0,
+        "key:category": 1.0,
+        "key:summary": 1.0,
+        "key:urgency": 1.0,
+        "latency": 1.0,
+        "nomatch:^(sure|here'?s|certainly)": 1.0
+      },
+      "hint": {
+        "category": "other",
+        "urgency": "low"
+      },
+      "noise_floor": 0.0,
+      "prompt": "You are a support triage assistant.\n\nClassify the ticket below.\n\n<ticket>\nIs there a student discount available?\n</ticket>\n\nReturn category (one of: billing, bug, feature_request, account, other),\nurgency (one of: low, medium, high), and a one-line summary.\n\nRespond with ONLY valid JSON. No markdown fence, no prose.\n",
+      "runs": [
+        {
+          "cost_usd": 0.000306,
+          "latency_ms": 442.7,
+          "text": "{\"category\": \"other\", \"urgency\": \"low\", \"summary\": \"is there a student discount available?\"}",
+          "tokens": 102
+        },
+        {
+          "cost_usd": 0.000306,
+          "latency_ms": 392.1,
+          "text": "{\"category\": \"other\", \"urgency\": \"low\", \"summary\": \"is there a student discount available?\"}",
+          "tokens": 102
+        },
+        {
+          "cost_usd": 0.000306,
+          "latency_ms": 395.9,
+          "text": "{\"category\": \"other\", \"urgency\": \"low\", \"summary\": \"is there a student discount available?\"}",
+          "tokens": 102
+        }
+      ]
+    },
+    "t043": {
+      "assert_rates": {
+        "cost": 1.0,
+        "enum:category": 1.0,
+        "enum:urgency": 1.0,
+        "json_bare": 1.0,
+        "json_parses": 1.0,
+        "key:category": 1.0,
+        "key:summary": 1.0,
+        "key:urgency": 1.0,
+        "latency": 1.0,
+        "nomatch:^(sure|here'?s|certainly)": 1.0
+      },
+      "hint": {
+        "category": "billing",
+        "urgency": "medium"
+      },
+      "noise_floor": 0.0363,
+      "prompt": "You are a support triage assistant.\n\nClassify the ticket below.\n\n<ticket>\nThe payment page throws an error when I try to update my card.\n</ticket>\n\nReturn category (one of: billing, bug, feature_request, account, other),\nurgency (one of: low, medium, high), and a one-line summary.\n\nRespond with ONLY valid JSON. No markdown fence, no prose.\n",
+      "runs": [
+        {
+          "cost_usd": 0.000339,
+          "latency_ms": 352.7,
+          "text": "{\"category\": \"billing\", \"urgency\": \"low\", \"summary\": \"the payment page throws an error when i try to update my\"}",
+          "tokens": 113
+        },
+        {
+          "cost_usd": 0.000339,
+          "latency_ms": 379.3,
+          "text": "{\"category\": \"billing\", \"urgency\": \"medium\", \"summary\": \"the payment page throws an error when i try to update my\"}",
+          "tokens": 113
+        },
+        {
+          "cost_usd": 0.000339,
+          "latency_ms": 363.4,
+          "text": "{\"category\": \"billing\", \"urgency\": \"low\", \"summary\": \"the payment page throws an error when i try to update my\"}",
+          "tokens": 113
+        }
+      ]
+    },
+    "t044": {
+      "assert_rates": {
+        "cost": 1.0,
+        "enum:category": 1.0,
+        "enum:urgency": 1.0,
+        "json_bare": 1.0,
+        "json_parses": 1.0,
+        "key:category": 1.0,
+        "key:summary": 1.0,
+        "key:urgency": 1.0,
+        "latency": 1.0,
+        "nomatch:^(sure|here'?s|certainly)": 1.0
+      },
+      "hint": {
+        "category": "bug",
+        "urgency": "medium"
+      },
+      "noise_floor": 0.0,
+      "prompt": "You are a support triage assistant.\n\nClassify the ticket below.\n\n<ticket>\nI was charged but the app crashed before confirming, did it go through?\n</ticket>\n\nReturn category (one of: billing, bug, feature_request, account, other),\nurgency (one of: low, medium, high), and a one-line summary.\n\nRespond with ONLY valid JSON. No markdown fence, no prose.\n",
+      "runs": [
+        {
+          "cost_usd": 0.000348,
+          "latency_ms": 368.2,
+          "text": "{\"category\": \"billing\", \"urgency\": \"low\", \"summary\": \"i was charged but the app crashed before confirming, did it go\"}",
+          "tokens": 116
+        },
+        {
+          "cost_usd": 0.000348,
+          "latency_ms": 382.0,
+          "text": "{\"category\": \"billing\", \"urgency\": \"low\", \"summary\": \"i was charged but the app crashed before confirming, did it go\"}",
+          "tokens": 116
+        },
+        {
+          "cost_usd": 0.000348,
+          "latency_ms": 419.1,
+          "text": "{\"category\": \"billing\", \"urgency\": \"low\", \"summary\": \"i was charged but the app crashed before confirming, did it go\"}",
+          "tokens": 116
+        }
+      ]
+    },
+    "t045": {
+      "assert_rates": {
+        "cost": 1.0,
+        "enum:category": 1.0,
+        "enum:urgency": 1.0,
+        "json_bare": 1.0,
+        "json_parses": 1.0,
+        "key:category": 1.0,
+        "key:summary": 1.0,
+        "key:urgency": 1.0,
+        "latency": 1.0,
+        "nomatch:^(sure|here'?s|certainly)": 1.0
+      },
+      "hint": {
+        "category": "account",
+        "urgency": "medium"
+      },
+      "noise_floor": 0.0,
+      "prompt": "You are a support triage assistant.\n\nClassify the ticket below.\n\n<ticket>\nLogin is broken after I changed my email address.\n</ticket>\n\nReturn category (one of: billing, bug, feature_request, account, other),\nurgency (one of: low, medium, high), and a one-line summary.\n\nRespond with ONLY valid JSON. No markdown fence, no prose.\n",
+      "runs": [
+        {
+          "cost_usd": 0.000324,
+          "latency_ms": 349.9,
+          "text": "{\"category\": \"account\", \"urgency\": \"low\", \"summary\": \"login is broken after i changed my email address.\"}",
+          "tokens": 108
+        },
+        {
+          "cost_usd": 0.000324,
+          "latency_ms": 444.3,
+          "text": "{\"category\": \"account\", \"urgency\": \"low\", \"summary\": \"login is broken after i changed my email address.\"}",
+          "tokens": 108
+        },
+        {
+          "cost_usd": 0.000324,
+          "latency_ms": 356.8,
+          "text": "{\"category\": \"account\", \"urgency\": \"low\", \"summary\": \"login is broken after i changed my email address.\"}",
+          "tokens": 108
+        }
+      ]
+    },
+    "t046": {
+      "assert_rates": {
+        "cost": 1.0,
+        "enum:category": 1.0,
+        "enum:urgency": 1.0,
+        "json_bare": 1.0,
+        "json_parses": 1.0,
+        "key:category": 1.0,
+        "key:summary": 1.0,
+        "key:urgency": 1.0,
+        "latency": 1.0,
+        "nomatch:^(sure|here'?s|certainly)": 1.0
+      },
+      "hint": {
+        "category": "feature_request",
+        "urgency": "high"
+      },
+      "noise_floor": 0.0327,
+      "prompt": "You are a support triage assistant.\n\nClassify the ticket below.\n\n<ticket>\nThe export is so slow it is basically unusable, can you make it faster?\n</ticket>\n\nReturn category (one of: billing, bug, feature_request, account, other),\nurgency (one of: low, medium, high), and a one-line summary.\n\nRespond with ONLY valid JSON. No markdown fence, no prose.\n",
+      "runs": [
+        {
+          "cost_usd": 0.000345,
+          "latency_ms": 451.7,
+          "text": "{\"category\": \"other\", \"urgency\": \"low\", \"summary\": \"the export is so slow it is basically unusable, can you make\"}",
+          "tokens": 115
+        },
+        {
+          "cost_usd": 0.000345,
+          "latency_ms": 416.7,
+          "text": "{\"category\": \"other\", \"urgency\": \"low\", \"summary\": \"the export is so slow it is basically unusable, can you make\"}",
+          "tokens": 115
+        },
+        {
+          "cost_usd": 0.000348,
+          "latency_ms": 438.2,
+          "text": "{\"category\": \"other\", \"urgency\": \"medium\", \"summary\": \"the export is so slow it is basically unusable, can you make\"}",
+          "tokens": 116
+        }
+      ]
+    },
+    "t047": {
+      "assert_rates": {
+        "cost": 1.0,
+        "enum:category": 1.0,
+        "enum:urgency": 1.0,
+        "json_bare": 1.0,
+        "json_parses": 1.0,
+        "key:category": 1.0,
+        "key:summary": 1.0,
+        "key:urgency": 1.0,
+        "latency": 1.0,
+        "nomatch:^(sure|here'?s|certainly)": 1.0
+      },
+      "hint": {
+        "category": "bug",
+        "urgency": "medium"
+      },
+      "noise_floor": 0.0381,
+      "prompt": "You are a support triage assistant.\n\nClassify the ticket below.\n\n<ticket>\nMy invoice download link returns a 500.\n</ticket>\n\nReturn category (one of: billing, bug, feature_request, account, other),\nurgency (one of: low, medium, high), and a one-line summary.\n\nRespond with ONLY valid JSON. No markdown fence, no prose.\n",
+      "runs": [
+        {
+          "cost_usd": 0.000309,
+          "latency_ms": 399.1,
+          "text": "{\"category\": \"billing\", \"urgency\": \"high\", \"summary\": \"my invoice download link returns a 500.\"}",
+          "tokens": 103
+        },
+        {
+          "cost_usd": 0.000306,
+          "latency_ms": 322.9,
+          "text": "{\"category\": \"bug\", \"urgency\": \"high\", \"summary\": \"my invoice download link returns a 500.\"}",
+          "tokens": 102
+        },
+        {
+          "cost_usd": 0.000306,
+          "latency_ms": 348.2,
+          "text": "{\"category\": \"bug\", \"urgency\": \"high\", \"summary\": \"my invoice download link returns a 500.\"}",
+          "tokens": 102
+        }
+      ]
+    },
+    "t048": {
+      "assert_rates": {
+        "cost": 1.0,
+        "enum:category": 1.0,
+        "enum:urgency": 1.0,
+        "json_bare": 1.0,
+        "json_parses": 1.0,
+        "key:category": 1.0,
+        "key:summary": 1.0,
+        "key:urgency": 1.0,
+        "latency": 1.0,
+        "nomatch:^(sure|here'?s|certainly)": 1.0
+      },
+      "hint": {
+        "category": "account",
+        "urgency": "high"
+      },
+      "noise_floor": 0.0518,
+      "prompt": "You are a support triage assistant.\n\nClassify the ticket below.\n\n<ticket>\nCannot sign in and I am being billed for a seat I cannot use.\n</ticket>\n\nReturn category (one of: billing, bug, feature_request, account, other),\nurgency (one of: low, medium, high), and a one-line summary.\n\nRespond with ONLY valid JSON. No markdown fence, no prose.\n",
+      "runs": [
+        {
+          "cost_usd": 0.000333,
+          "latency_ms": 418.0,
+          "text": "{\"category\": \"account\", \"urgency\": \"high\", \"summary\": \"cannot sign in and i am being billed for a seat i\"}",
+          "tokens": 111
+        },
+        {
+          "cost_usd": 0.000333,
+          "latency_ms": 350.4,
+          "text": "{\"category\": \"account\", \"urgency\": \"high\", \"summary\": \"cannot sign in and i am being billed for a seat i\"}",
+          "tokens": 111
+        },
+        {
+          "cost_usd": 0.000333,
+          "latency_ms": 438.4,
+          "text": "{\"category\": \"billing\", \"urgency\": \"high\", \"summary\": \"cannot sign in and i am being billed for a seat i\"}",
+          "tokens": 111
+        }
+      ]
+    },
+    "t049": {
+      "assert_rates": {
+        "cost": 1.0,
+        "enum:category": 1.0,
+        "enum:urgency": 1.0,
+        "json_bare": 1.0,
+        "json_parses": 1.0,
+        "key:category": 1.0,
+        "key:summary": 1.0,
+        "key:urgency": 1.0,
+        "latency": 1.0,
+        "nomatch:^(sure|here'?s|certainly)": 1.0
+      },
+      "hint": {
+        "category": "feature_request",
+        "urgency": "low"
+      },
+      "noise_floor": 0.0372,
+      "prompt": "You are a support triage assistant.\n\nClassify the ticket below.\n\n<ticket>\nThere is no way to cancel a subscription in the UI, please add one.\n</ticket>\n\nReturn category (one of: billing, bug, feature_request, account, other),\nurgency (one of: low, medium, high), and a one-line summary.\n\nRespond with ONLY valid JSON. No markdown fence, no prose.\n",
+      "runs": [
+        {
+          "cost_usd": 0.000345,
+          "latency_ms": 448.0,
+          "text": "{\"category\": \"billing\", \"urgency\": \"medium\", \"summary\": \"there is no way to cancel a subscription in the ui, please\"}",
+          "tokens": 115
+        },
+        {
+          "cost_usd": 0.000345,
+          "latency_ms": 365.8,
+          "text": "{\"category\": \"billing\", \"urgency\": \"medium\", \"summary\": \"there is no way to cancel a subscription in the ui, please\"}",
+          "tokens": 115
+        },
+        {
+          "cost_usd": 0.000342,
+          "latency_ms": 358.0,
+          "text": "{\"category\": \"billing\", \"urgency\": \"low\", \"summary\": \"there is no way to cancel a subscription in the ui, please\"}",
+          "tokens": 114
+        }
+      ]
+    },
+    "t050": {
+      "assert_rates": {
+        "cost": 1.0,
+        "enum:category": 1.0,
+        "enum:urgency": 1.0,
+        "json_bare": 1.0,
+        "json_parses": 1.0,
+        "key:category": 1.0,
+        "key:summary": 1.0,
+        "key:urgency": 1.0,
+        "latency": 1.0,
+        "nomatch:^(sure|here'?s|certainly)": 1.0
+      },
+      "hint": {
+        "category": "other",
+        "urgency": "low"
+      },
+      "noise_floor": 0.0,
+      "prompt": "You are a support triage assistant.\n\nClassify the ticket below.\n\n<ticket>\nFollowing up on my previous ticket, any update?\n</ticket>\n\nReturn category (one of: billing, bug, feature_request, account, other),\nurgency (one of: low, medium, high), and a one-line summary.\n\nRespond with ONLY valid JSON. No markdown fence, no prose.\n",
+      "runs": [
+        {
+          "cost_usd": 0.000318,
+          "latency_ms": 415.8,
+          "text": "{\"category\": \"other\", \"urgency\": \"low\", \"summary\": \"following up on my previous ticket, any update?\"}",
+          "tokens": 106
+        },
+        {
+          "cost_usd": 0.000318,
+          "latency_ms": 437.4,
+          "text": "{\"category\": \"other\", \"urgency\": \"low\", \"summary\": \"following up on my previous ticket, any update?\"}",
+          "tokens": 106
+        },
+        {
+          "cost_usd": 0.000318,
+          "latency_ms": 406.1,
+          "text": "{\"category\": \"other\", \"urgency\": \"low\", \"summary\": \"following up on my previous ticket, any update?\"}",
+          "tokens": 106
+        }
+      ]
+    }
+  },
+  "fingerprint": "f1fbb8e8fedf",
+  "provider": "mock",
+  "recorded_at": "2026-09-13T07:19:36.878437+00:00",
+  "runs_per_case": 3
+}

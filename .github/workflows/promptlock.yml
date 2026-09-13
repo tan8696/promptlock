@@ -1,0 +1,45 @@
+name: PromptLock
+
+on:
+  pull_request:
+    paths:
+      - "examples/**"
+      - "promptlock.yaml"
+      - ".promptlock/**"
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - run: pip install -e .
+
+      # Offline by default. Set PROMPTLOCK_PROVIDER=anthropic and add
+      # ANTHROPIC_API_KEY to run the suite against a real model.
+      - name: promptlock check
+        id: check
+        run: promptlock check --markdown report.md --json report.json
+        env:
+          PROMPTLOCK_PROVIDER: ${{ vars.PROMPTLOCK_PROVIDER || 'mock' }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+
+      - name: Comment on PR
+        if: always()
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          header: promptlock
+          path: report.md
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: promptlock-report
+          path: report.json
