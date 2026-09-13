@@ -13,13 +13,29 @@ from __future__ import annotations
 import html
 from difflib import SequenceMatcher
 
-VERDICT_COLOUR = {"PASS": "#1a7f5a", "DRIFT": "#b7791f", "FAIL": "#c02b2b"}
 VERDICT_ICON = {"PASS": "&#9679;", "DRIFT": "&#9679;", "FAIL": "&#9679;"}
 
 CSS = """
 :root {
   --ink: #14161a; --muted: #5c6570; --line: #e2e6ea; --bg: #ffffff;
-  --panel: #f7f8fa; --pass: #1a7f5a; --drift: #b7791f; --fail: #c02b2b;
+  --panel: #f7f8fa; --raise: #ffffff; --stripe: #fcfcfd; --hover: #f2f4f7;
+  --pass: #1a7f5a; --drift: #9c6511; --fail: #c02b2b;
+  --grid: #eceff2; --axis: #c9d0d8; --tick: #98a2ad;
+  --warn-bg: #fdf8ec; --warn-line: #f0d9a8; --warn-ink: #8a6d1f;
+  --del-bg: #ffd9d9; --del-ink: #7a1b1b;
+  --ins-bg: #cdf1dd; --ins-ink: #10543b;
+}
+/* The report is read wherever the reviewer happens to be. */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --ink: #e7ebf0; --muted: #97a1ad; --line: #2b313a; --bg: #14171c;
+    --panel: #1b1f26; --raise: #1b1f26; --stripe: #181c22; --hover: #222833;
+    --pass: #56cfa1; --drift: #e0b25d; --fail: #ff8a8a;
+    --grid: #232933; --axis: #3a424e; --tick: #6a7481;
+    --warn-bg: #241f14; --warn-line: #4a3d20; --warn-ink: #e0b25d;
+    --del-bg: #4a1f1f; --del-ink: #ffc9c9;
+    --ins-bg: #123a2a; --ins-ink: #9fe8c4;
+  }
 }
 * { box-sizing: border-box; }
 body {
@@ -39,24 +55,43 @@ h1 { font-size: 20px; margin: 0 0 4px; letter-spacing: -0.01em; }
            letter-spacing: 0.04em; }
 .card .v { font-size: 20px; font-weight: 600; margin-top: 2px;
            font-variant-numeric: tabular-nums; }
+.banner {
+  display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px;
+  border-radius: 8px; padding: 14px 16px; margin-bottom: 20px;
+  border: 1px solid var(--line); background: var(--panel);
+  border-left: 4px solid var(--muted);
+}
+.banner strong { font-size: 17px; letter-spacing: -0.01em; }
+.banner span { color: var(--muted); }
+.banner.pass  { border-left-color: var(--pass); }
+.banner.pass strong  { color: var(--pass); }
+.banner.drift { border-left-color: var(--drift); }
+.banner.drift strong { color: var(--drift); }
+.banner.fail  { border-left-color: var(--fail); }
+.banner.fail strong  { color: var(--fail); }
 .changed {
-  border: 1px solid #f0d9a8; background: #fdf8ec; border-radius: 8px;
-  padding: 12px 14px; margin-bottom: 20px;
+  border: 1px solid var(--warn-line); background: var(--warn-bg);
+  border-radius: 8px; padding: 12px 14px; margin-bottom: 20px;
 }
 .changed h2 { font-size: 13px; margin: 0 0 6px; text-transform: uppercase;
-              letter-spacing: 0.04em; color: #8a6d1f; }
+              letter-spacing: 0.04em; color: var(--warn-ink); }
 .changed ul { margin: 0; padding-left: 18px; }
-.changed code { background: #f4ead3; padding: 1px 4px; border-radius: 3px; }
+.changed code { background: var(--line); padding: 1px 4px; border-radius: 3px; }
 figure { margin: 0 0 24px; border: 1px solid var(--line); border-radius: 8px;
          padding: 12px; overflow-x: auto; }
 figcaption { color: var(--muted); font-size: 12px; margin-top: 6px; }
 .filters { display: flex; gap: 8px; align-items: center; margin-bottom: 10px; }
 .filters button {
-  font: inherit; padding: 5px 11px; border: 1px solid var(--line);
-  background: #fff; border-radius: 999px; cursor: pointer; color: var(--ink);
+  font: inherit; padding: 5px 12px; border: 1px solid var(--line);
+  background: var(--raise); border-radius: 999px; cursor: pointer;
+  color: var(--ink);
 }
-.filters button[aria-pressed="true"] { background: var(--ink); color: #fff;
+.filters button:hover { background: var(--hover); }
+.filters button[aria-pressed="true"] { background: var(--ink); color: var(--bg);
                                         border-color: var(--ink); }
+.filters .n { opacity: 0.55; font-variant-numeric: tabular-nums; }
+:focus-visible { outline: 2px solid var(--pass); outline-offset: 2px;
+                 border-radius: 4px; }
 .row { border: 1px solid var(--line); border-top: none; }
 .row:first-of-type { border-top: 1px solid var(--line);
                      border-radius: 8px 8px 0 0; }
@@ -67,8 +102,8 @@ figcaption { color: var(--muted); font-size: 12px; margin-top: 6px; }
   list-style: none;
 }
 .row > summary::-webkit-details-marker { display: none; }
-.row:nth-of-type(odd) > summary { background: #fcfcfd; }
-.row > summary:hover { background: #f2f4f7; }
+.row:nth-of-type(odd) > summary { background: var(--stripe); }
+.row > summary:hover { background: var(--hover); }
 .cid { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
 .num { text-align: right; font-variant-numeric: tabular-nums;
        color: var(--muted); }
@@ -76,23 +111,33 @@ figcaption { color: var(--muted); font-size: 12px; margin-top: 6px; }
          white-space: nowrap; }
 .PASS { color: var(--pass); } .DRIFT { color: var(--drift); }
 .FAIL { color: var(--fail); }
-.detail { padding: 4px 12px 16px; background: #fcfcfd;
+.detail { padding: 4px 12px 16px; background: var(--stripe);
           border-top: 1px dashed var(--line); }
 .sbs { display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
        margin-top: 10px; }
 .sbs h3 { font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em;
           color: var(--muted); margin: 0 0 5px; }
 pre {
-  margin: 0; padding: 10px; background: #fff; border: 1px solid var(--line);
+  margin: 0; padding: 10px; background: var(--raise);
+  border: 1px solid var(--line);
   border-radius: 6px; white-space: pre-wrap; word-break: break-word;
   font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   font-size: 12px; line-height: 1.5;
 }
 mark { border-radius: 2px; padding: 0 1px; }
-mark.del { background: #ffd9d9; color: #7a1b1b; }
-mark.ins { background: #cdf1dd; color: #10543b; }
+mark.del { background: var(--del-bg); color: var(--del-ink); }
+mark.ins { background: var(--ins-bg); color: var(--ins-ink); }
 .meta { display: flex; gap: 16px; flex-wrap: wrap; color: var(--muted);
         font-size: 12px; margin-top: 10px; }
+/* SVG presentation attributes cannot take var(), so the chart is styled here.
+   Dots inherit their verdict colour through currentColor. */
+svg .grid { stroke: var(--grid); stroke-width: 1; }
+svg .axis { stroke: var(--axis); }
+svg .tick { stroke: var(--tick); stroke-width: 1.5; }
+svg .median { stroke: var(--drift); stroke-width: 1; stroke-dasharray: 5 4;
+              opacity: 0.8; }
+svg .lbl { fill: var(--muted); font-size: 10px; }
+svg .dot { fill: currentColor; fill-opacity: 0.9; }
 .legend { display: flex; gap: 14px; color: var(--muted); font-size: 12px; }
 @media (max-width: 720px) {
   .row > summary { grid-template-columns: 16px 1fr 76px; }
@@ -148,7 +193,7 @@ def _diff_spans(before: str, after: str) -> tuple[str, str]:
     return "".join(left), "".join(right)
 
 
-def _scatter(cases: dict) -> str:
+def _scatter(cases: dict, suite: dict | None = None) -> str:
     """Drift per case with each case's own threshold drawn as a tick.
 
     The ticks usually line up, because most cases are stable enough that
@@ -159,6 +204,7 @@ def _scatter(cases: dict) -> str:
     if not cases:
         return "<p>No cases.</p>"
 
+    suite = suite or {}
     width, height, pad_l, pad_b, pad_t = 900, 260, 46, 26, 12
     items = list(cases.items())
     top = max(
@@ -181,37 +227,83 @@ def _scatter(cases: dict) -> str:
     for frac in (0, 0.25, 0.5, 0.75, 1.0):
         y = y_of(top * frac)
         parts.append(
-            f'<line x1="{pad_l}" y1="{y:.1f}" x2="{width - 12}" y2="{y:.1f}" '
-            f'stroke="#eceff2" stroke-width="1"/>'
-            f'<text x="{pad_l - 8}" y="{y + 3:.1f}" text-anchor="end" '
-            f'font-size="10" fill="#8a929b">{top * frac:.3f}</text>'
+            f'<line class="grid" x1="{pad_l}" y1="{y:.1f}" x2="{width - 12}" '
+            f'y2="{y:.1f}"/>'
+            f'<text class="lbl" x="{pad_l - 8}" y="{y + 3:.1f}" '
+            f'text-anchor="end">{top * frac:.3f}</text>'
         )
 
     for i, (_cid, c) in enumerate(items):
         x, ty = x_of(i), y_of(c["threshold"])
         parts.append(
-            f'<line x1="{x - 4:.1f}" y1="{ty:.1f}" x2="{x + 4:.1f}" y2="{ty:.1f}" '
-            f'stroke="#98a2ad" stroke-width="1.5"/>'
+            f'<line class="tick" x1="{x - 4:.1f}" y1="{ty:.1f}" '
+            f'x2="{x + 4:.1f}" y2="{ty:.1f}"/>'
         )
 
     for i, (cid, c) in enumerate(items):
         x, y = x_of(i), y_of(c["drift"])
-        colour = VERDICT_COLOUR.get(c["verdict"], "#666")
         parts.append(
-            f'<circle cx="{x:.1f}" cy="{y:.1f}" r="3.4" fill="{colour}" '
-            f'fill-opacity="0.85"><title>{_esc(cid)}: drift {c["drift"]}, '
+            f'<circle class="dot {_esc(c["verdict"])}" cx="{x:.1f}" cy="{y:.1f}" '
+            f'r="3.4"><title>{_esc(cid)}: drift {c["drift"]}, '
             f'threshold {c["threshold"]} ({_esc(c["verdict"])})</title></circle>'
         )
 
+    # The suite median: the line the systemic-drift gate actually watches.
+    median = suite.get("median")
+    if median is not None and median <= top:
+        my = y_of(median)
+        parts.append(
+            f'<line class="median" x1="{pad_l}" y1="{my:.1f}" x2="{width - 12}" '
+            f'y2="{my:.1f}"><title>suite median {median}</title></line>'
+            f'<text class="lbl" x="{width - 14}" y="{my - 4:.1f}" '
+            f'text-anchor="end">suite median {median}</text>'
+        )
+
     parts.append(
-        f'<line x1="{pad_l}" y1="{pad_t + plot_h}" x2="{width - 12}" '
-        f'y2="{pad_t + plot_h}" stroke="#c9d0d8"/>'
-        f'<text x="{pad_l}" y="{height - 6}" font-size="10" fill="#8a929b">'
-        f'case 1</text>'
-        f'<text x="{width - 12}" y="{height - 6}" font-size="10" fill="#8a929b" '
+        f'<line class="axis" x1="{pad_l}" y1="{pad_t + plot_h}" x2="{width - 12}" '
+        f'y2="{pad_t + plot_h}"/>'
+        f'<text class="lbl" x="{pad_l}" y="{height - 6}">case 1</text>'
+        f'<text class="lbl" x="{width - 12}" y="{height - 6}" '
         f'text-anchor="end">case {len(items)}</text></svg>'
     )
     return "".join(parts)
+
+
+def _banner(report: dict) -> str:
+    """The one line a reviewer reads before deciding whether to care."""
+    s = report["summary"]
+    total = sum(s.values())
+    if s["FAIL"]:
+        return (
+            f'<div class="banner fail"><strong>{s["FAIL"]} of {total} cases '
+            f"regressed</strong><span>This fails the build. Expand a row to see "
+            f"which assertion broke and what the output looks like now.</span></div>"
+        )
+    if s["DRIFT"]:
+        return (
+            f'<div class="banner drift"><strong>{s["DRIFT"]} of {total} cases '
+            f"changed</strong><span>Output moved past its noise floor, but the "
+            f"judge did not find it worse. The build passes.</span></div>"
+        )
+    return (
+        f'<div class="banner pass"><strong>All {total} cases hold</strong>'
+        f"<span>Nothing moved further than it moves on its own.</span></div>"
+    )
+
+
+def _filters(report: dict) -> str:
+    counts = {"ALL": len(report["cases"])}
+    for verdict in ("FAIL", "DRIFT", "PASS"):
+        counts[verdict] = sum(
+            1 for c in report["cases"].values() if c["verdict"] == verdict
+        )
+    labels = {"ALL": "All", "FAIL": "Fail", "DRIFT": "Drift", "PASS": "Pass"}
+    buttons = "".join(
+        f'<button data-filter="{key}" aria-pressed="{str(key == "ALL").lower()}">'
+        f'{labels[key]} <span class="n">{counts[key]}</span></button>'
+        for key in ("ALL", "FAIL", "DRIFT", "PASS")
+    )
+    return f'<div class="filters" hidden>{buttons}</div>'
 
 
 def _cards(report: dict) -> str:
@@ -309,9 +401,10 @@ def render(report: dict, title: str = "PromptLock report") -> str:
 </head><body><div class="wrap">
 <h1>{_esc(title)}</h1>
 <p class="sub">{_esc(headline)}.</p>
+{_banner(report)}
 <div class="cards">{_cards(report)}</div>
 {_changed(report)}
-<figure>{_scatter(report["cases"])}
+<figure>{_scatter(report["cases"], report.get("suite_drift"))}
 <figcaption>Each dot is one case's drift; the grey tick beside it is that
 case's own threshold, measured from its own noise at record time. A dot below
 its tick is within noise. Colour is the verdict.</figcaption></figure>
@@ -321,12 +414,7 @@ its tick is within noise. Colour is the verdict.</figcaption></figure>
   <span class="FAIL">&#9679; fail</span>
   <span>&#9472; per-case threshold</span>
 </div>
-<div class="filters" hidden>
-  <button data-filter="ALL" aria-pressed="true">All</button>
-  <button data-filter="FAIL" aria-pressed="false">Fail</button>
-  <button data-filter="DRIFT" aria-pressed="false">Drift</button>
-  <button data-filter="PASS" aria-pressed="false">Pass</button>
-</div>
+{_filters(report)}
 {_rows(report)}
 </div><script>{JS}</script></body></html>
 """
