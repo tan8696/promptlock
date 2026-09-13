@@ -77,8 +77,9 @@ Python, standard library only. The single runtime dependency is PyYAML.
 the benchmark first: 6 edits that genuinely degrade output, 10 a reviewer would
 wave through, 3 model changes, scored on precision and recall against a naive
 string diff. The benchmark became the acceptance gate — it exits non-zero if
-recall drops below 6/6, so no change can be validated by tuning a threshold
-until the numbers come back.
+recall drops below 6/6, if false positives exceed 1/10, or if any model change
+lands on the wrong side. No change can be validated by tuning a threshold until
+the numbers come back.
 
 **One false positive we couldn't tune away.** A semantically null clause swap
 fired on 3 of 50 cases. It was documented in LIMITATIONS.md rather than hidden,

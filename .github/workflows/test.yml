@@ -36,7 +36,8 @@ jobs:
       - name: Coverage
         run: coverage report
 
-      # The acceptance gate. Exits 1 if recall drops below 6/6 or false
-      # positives rise above 1/10, so the detector cannot regress silently.
+      # The acceptance gate. Exits 1 if recall drops below 6/6, false positives
+      # rise above 1/10, or a model/parameter variant is misclassified -- so the
+      # detector cannot regress silently.
       - name: Detector benchmark
         run: python scripts/benchmark.py

@@ -36,11 +36,17 @@ It replays 19 variants against 50 cases each: 6 prompt edits that genuinely
 degrade output, 10 a reviewer would wave through, and 3 model/parameter changes
 (`MODEL_SWAP`, scored separately — M2 is expected to stay quiet).
 
-**Recall must stay 6/6. False positives must not exceed 1/10.**
+**Recall must stay 6/6. False positives must not exceed 1/10. All 3
+model/parameter variants must stay correctly classified.**
 
-The suite currently scores **6/6 recall, 0/10 false positives, 100% precision**.
-The gate is 1/10 so there is headroom, but going 0/10 → 1/10 is a regression
-even though it passes: say so rather than letting it pass quietly.
+The suite currently scores **6/6 recall, 0/10 false positives, 100% precision,
+3/3 model/params**. The false-positive gate is 1/10 so there is headroom, but
+going 0/10 → 1/10 is a regression even though it passes: say so rather than
+letting it pass quietly.
+
+Note that `M2 temperature 0.0 → 0.2` is expected to stay **quiet**. Making the
+detector more sensitive until M2 fires trades a false negative for a false
+positive and fails the gate just as hard.
 
 If a change lowers recall or raises false positives, **revert the change and
 report what you saw.** Do not tune thresholds, constants, or the case set to

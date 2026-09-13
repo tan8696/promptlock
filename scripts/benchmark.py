@@ -186,11 +186,22 @@ def main() -> int:
     if fp > MAX_FALSE_POSITIVES:
         failures.append(f"false positives {fp}/{nh} above the allowed {MAX_FALSE_POSITIVES}/{nh}")
 
+    # A model swap that stops firing is as much a regression as a missed prompt
+    # edit, and M2 going loud is a false positive by another name. Both are
+    # gated, and the failure names the variant so CI logs say what broke.
+    missed = [r for r in swaps if r[2] != r[6]]
+    if missed:
+        failures.append(
+            "model/param variants misclassified: "
+            + ", ".join(f"{r[1]} (expected {'fire' if r[6] else 'quiet'})" for r in missed)
+        )
+
     if failures:
         print("\nGATE FAILED: " + "; ".join(failures))
         return 1
     print(f"\nGate passed: recall {tp}/{nr}, false positives {fp}/{nh} "
-          f"(limit {MAX_FALSE_POSITIVES}/{nh}).")
+          f"(limit {MAX_FALSE_POSITIVES}/{nh}), model/params "
+          f"{len(swaps) - len(missed)}/{len(swaps)}.")
     return 0
 
 

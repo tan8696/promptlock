@@ -133,8 +133,9 @@ PR costs zero judge calls.
 ## Results in detail
 
 The headline table is [above](#does-it-work). `scripts/benchmark.py` also exits
-non-zero if recall drops below 6/6 or false positives rise above 1/10, so the
-detector cannot regress silently — that is the gate CI runs.
+non-zero if recall drops below 6/6, false positives rise above 1/10, or any
+model/parameter variant lands on the wrong side — so the detector cannot regress
+silently. That is the gate CI runs.
 
 The model/parameter group is scored separately, since two of its three variants
 *should* fire and one should not:
