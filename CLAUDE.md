@@ -1,0 +1,118 @@
+# PromptLock
+
+CI for prompts: fail the PR when a prompt, model, or parameter change silently
+degrades LLM output.
+
+## Architecture: three signals, one verdict per case
+
+| Signal | Module | Catches | Can FAIL alone? |
+|---|---|---|---|
+| Deterministic assertions | `scorers/assertions.py` | schema breaks, missing keys, enum violations, prose leakage, latency/cost blowouts | yes |
+| Semantic drift | `scorers/drift.py` | output moved further than the case's own measured noise | no — escalates to the judge |
+| Pairwise LLM judge | `scorers/judge.py` | "different" vs genuinely "worse", position-swapped to debias | yes, via drift |
+
+Verdicts: **PASS** (within measured noise) · **DRIFT** (moved, not worse — does
+not fail the build) · **FAIL** (assertion the baseline always satisfied now
+mostly fails, or the judge said worse in both orderings).
+
+Two ideas carry the design: a **per-case noise floor** measured at record time
+(`threshold = max(drift_floor, noise_floor × drift_multiplier)`), and
+**confirmation re-runs** that re-sample a suspected regression before failing
+the build. A **suite-level drift gate** catches instruction changes that every
+individual case absorbs.
+
+---
+
+## HARD RULE — the benchmark is the acceptance gate
+
+`scripts/benchmark.py` is the acceptance test for this project. After **any**
+change under `promptlock/`, run it:
+
+```bash
+python3 scripts/benchmark.py
+```
+
+It replays 6 prompt edits that genuinely degrade output and 10 a reviewer would
+wave through, against 50 cases each.
+
+**Recall must stay 6/6. False positives must not exceed 1/10.**
+
+If a change lowers recall or raises false positives, **revert the change and
+report what you saw.** Do not tune thresholds, constants, or the case set to
+make the numbers come back. The benchmark measures the detector; editing the
+detector's constants until the benchmark passes measures nothing.
+
+## HARD RULE — never hand-edit the baseline
+
+`.promptlock/baseline.json` is generated. Never edit it by hand. Regenerate:
+
+```bash
+promptlock record
+```
+
+## HARD RULE — LIMITATIONS.md stays honest
+
+`LIMITATIONS.md` is the project's credibility. Keep it true:
+
+- Fix something listed there → **delete that entry**.
+- Introduce a new limitation → **add it**.
+
+A limitation that has been fixed but is still documented is as much a lie as one
+that was never written down.
+
+---
+
+## File map
+
+```
+promptlock.yaml             config: target, cases, thresholds, assertions
+.promptlock/baseline.json   the snapshot — committed, reviewable in a PR diff
+CLAUDE.md                   this file
+README.md                   the pitch and the results table
+LIMITATIONS.md              where the measurements stop being trustworthy
+
+promptlock/
+  __init__.py       empty — package marker only
+  cli.py            argparse entry point: `record` | `check`; exit code is the CI gate
+  runner.py         verdict engine — owns run_suite/record/check, noise floors,
+                    confirmation re-runs, BREAK_RATE, suite-level systemic drift,
+                    and the Config dataclass (every tunable lives here)
+  providers.py      MockProvider (behavioural simulator, seeded) + AnthropicProvider
+  store.py          baseline save/load + prompt fingerprint
+  report.py         markdown (PR comment) + console rendering
+  scorers/
+    assertions.py   evaluate() per run, rate() per case — the only free FAIL
+    drift.py        hashed char 4-gram embedding, cosine, self/cross distance
+    judge.py        position-swapped pairwise compare + offline MockJudge rubric
+
+examples/demo_app/  app.py (the target prompt) + cases.yaml (50 tickets)
+scripts/
+  gen_cases.py      regenerates cases.yaml
+  benchmark.py      the acceptance gate — precision/recall vs a naive string diff
+  calibrate.py      measures the harmless/behavioural gap behind suite_drift_threshold
+  demo.sh           scripted walkthrough
+.github/workflows/  PR check + sticky comment
+```
+
+## Ownership notes
+
+- **All tunables live on `Config` in `runner.py`** and are surfaced in
+  `promptlock.yaml`. Do not scatter constants into scorers.
+- **Scorers are pure and stateless.** They take runs and config, return numbers
+  or booleans. Verdict logic belongs in `runner.py`, not in a scorer.
+- **`store.py` owns the on-disk format.** Anything that reads or writes
+  `.promptlock/` goes through it.
+- The demo runs fully offline against `MockProvider` — no API key, no network.
+  Benchmark numbers measure *the detector*, not any real model.
+
+## Commands
+
+```bash
+promptlock record                  # snapshot known-good behaviour
+promptlock check                   # exits 1 if anything regressed
+promptlock check --markdown report.md
+python3 scripts/benchmark.py       # the gate
+```
+
+If the `promptlock` console script is not on PATH, `python3 -m promptlock.cli`
+is equivalent and always works from the repo root.
