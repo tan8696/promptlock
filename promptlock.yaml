@@ -2,7 +2,9 @@ target: examples.demo_app.app:render
 cases: examples/demo_app/cases.yaml
 
 # Each case is run k times so its natural variance can be measured.
-runs_per_case: 3
+# k=5 rather than 3: a break is confirmed with an interval, and 3 samples is
+# too thin to separate "broken" from "unlucky" at any useful confidence.
+runs_per_case: 5
 provider: mock
 
 # Drift must exceed max(drift_floor, case_noise_floor * drift_multiplier).
@@ -11,6 +13,13 @@ drift_multiplier: 1.5
 
 suite_drift_threshold: 0.025
 systemic_judge_sample: 5
+
+# An assertion is "broken" only when the evidence supports it: the upper bound
+# of its new pass-rate, at break_confidence, must sit break_margin below the
+# rate the baseline held. With a baseline of 1.0 and a margin of 0.2, the new
+# pass-rate has to be confidently under 0.8 -- which 2-of-3 bad draws is not.
+break_confidence: 0.95
+break_margin: 0.2
 
 judge_enabled: true
 confirm_reruns: true

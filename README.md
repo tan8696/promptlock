@@ -54,6 +54,12 @@ drift threshold = max(drift_floor, case_noise_floor × 1.5)
 `k` more times before the build is failed — flaky-test quarantine, applied to
 prompts. This alone takes the false-positive rate from 100% to 10%.
 
+**Breaking a build is a hypothesis test.** A pass-rate of 0/3 and 0/30 are both
+"0%", but only one is evidence. An assertion counts as broken only when the 95%
+Wilson upper bound on its new pass-rate sits a clear margin below the rate the
+baseline held (`promptlock/stats.py`), so an unlucky 2-of-3 cannot fail your
+build. This is what took the last false positive to zero.
+
 **Position-swapped judging.** LLM judges favour whichever answer they see first,
 so every comparison runs twice with the positions swapped. A verdict only counts
 when both orderings agree; disagreement is reported as a tie, never a regression.
@@ -78,7 +84,7 @@ PR costs zero judge calls.
 | Detector | Recall | False positives | Precision |
 |---|---|---|---|
 | Naive string diff | 6/6 (100%) | 10/10 (100%) | 38% |
-| **PromptLock** | **6/6 (100%)** | **1/10 (10%)** | **86%** |
+| **PromptLock** | **6/6 (100%)** | **0/10 (0%)** | **100%** |
 
 Both detectors find every real regression. Only one is quiet enough to leave
 switched on.
@@ -88,8 +94,11 @@ Two of the six break **zero assertions** — `R4 hedging-instruction` and
 Nothing but the suite-level drift gate plus the judge sees them. The tiers are
 not decoration.
 
-The remaining false positive (`H10 reorder-tail`) is documented in
-[LIMITATIONS.md](LIMITATIONS.md) rather than tuned away.
+`H10 reorder-tail` — a semantically null clause swap that used to fire on 3 of
+50 cases — went quiet when the point threshold became a Wilson interval. It was
+fixed, not tuned away: every constant in `promptlock.yaml` is unchanged from the
+run that scored 86%. What remains uncertain is in
+[LIMITATIONS.md](LIMITATIONS.md).
 
 ## Quickstart
 
@@ -150,11 +159,13 @@ means "what did known-good mean here?" is answerable by `git log`.
 target: examples.demo_app.app:render   # callable(case_input) -> prompt
 cases: examples/demo_app/cases.yaml
 
-runs_per_case: 3          # k — higher k, tighter noise estimate, more spend
+runs_per_case: 5          # k — higher k, tighter noise estimate, more spend
 drift_floor: 0.12          # absolute lower bound on the per-case threshold
 drift_multiplier: 1.5      # how far past its own noise a case may move
 suite_drift_threshold: 0.025   # median drift that counts as a distribution shift
 systemic_judge_sample: 5       # cases sent to the judge when systemic drift fires
+break_confidence: 0.95     # confidence level for the pass-rate interval
+break_margin: 0.2          # how far below baseline the upper bound must sit
 judge_enabled: true
 confirm_reruns: true      # re-sample before failing the build
 

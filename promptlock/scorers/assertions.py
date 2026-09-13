@@ -60,12 +60,20 @@ def evaluate(output: dict, cfg: dict) -> dict[str, bool]:
     return res
 
 
-def rate(runs: list[dict], cfg: dict) -> dict[str, float]:
-    """Pass-rate per assertion across k runs of one case."""
-    if not runs:
-        return {}
-    tallies: dict[str, list[bool]] = {}
+def counts(runs: list[dict], cfg: dict) -> dict[str, tuple[int, int]]:
+    """(passes, runs) per assertion across k runs of one case.
+
+    Rates alone cannot support a confidence interval -- 0/3 and 0/30 are both
+    "0%" -- so the raw counts are the primitive and `rate` derives from them.
+    """
+    tallies: dict[str, tuple[int, int]] = {}
     for r in runs:
         for name, ok in evaluate(r, cfg).items():
-            tallies.setdefault(name, []).append(ok)
-    return {name: sum(v) / len(v) for name, v in tallies.items()}
+            passes, total = tallies.get(name, (0, 0))
+            tallies[name] = (passes + int(ok), total + 1)
+    return tallies
+
+
+def rate(runs: list[dict], cfg: dict) -> dict[str, float]:
+    """Pass-rate per assertion across k runs of one case."""
+    return {name: passes / total for name, (passes, total) in counts(runs, cfg).items()}

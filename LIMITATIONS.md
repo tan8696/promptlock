@@ -3,18 +3,6 @@
 Written honestly, because a tool that claims to measure regressions should be
 able to state where its own measurements stop being trustworthy.
 
-## Known false positive: `H10 reorder-tail`
-
-Reordering two clauses in the format instruction (`"No prose, no markdown
-fence."` → `"No markdown fence, no prose."`) fires on 3 of 50 cases. The edit is
-semantically null, but it reshuffles sampling, and three cases happened to land
-on the format-leak branch twice in a row — surviving the confirmation re-run.
-
-Fixes, in order of effort: raise `runs_per_case` to 5 (the flake estimate is
-currently built from 3 samples, which is thin); or require a *confidence
-interval* on the pass-rate rather than a point threshold. Neither was in scope
-for this build.
-
 ## The embedding is a hashed char n-gram, not a real embedding
 
 `scorers/drift.py` ships a dependency-free bag-of-4-grams vector so `check` runs
@@ -88,10 +76,18 @@ is not built.
 
 ## Statistical caveats
 
-- `k=3` is too few samples to estimate a variance well. It is a default chosen
-  for CI cost, not for statistical power.
-- `BREAK_RATE = 0.5` (an assertion is broken if it fails in a majority of runs)
-  is a threshold, not a hypothesis test. With k=3 it means "2 of 3".
+- Breaking an assertion is now a hypothesis test — the 95% Wilson upper bound on
+  the new pass-rate must sit `break_margin` below the baseline rate
+  (`promptlock/stats.py`). That fixed the `H10 reorder-tail` false positive, but
+  it buys evidence with samples: at `k=5` plus confirmation re-runs a real break
+  is judged on 10 runs, and the demo suite costs 250 calls to record instead
+  of 150.
+- **The drift side is still a point threshold.** Only assertions got the
+  interval treatment. `drift > max(drift_floor, noise_floor × multiplier)` is
+  the same single-number comparison it always was.
+- Wilson assumes independent Bernoulli draws. Runs of one case against one
+  provider are close enough to that in practice, but correlated failures (a
+  provider having a bad minute) violate it and will read as a confident break.
 - The noise floor is measured once, at record time. A model that gets noisier
   over time will not be re-profiled until you re-record.
 

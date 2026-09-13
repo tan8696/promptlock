@@ -19,16 +19,13 @@ from dataclasses import dataclass, field
 
 import yaml
 
+from . import stats
 from .providers import get_provider
 from .scorers import assertions, drift
 from .scorers import judge as judge_mod
 from .store import fingerprint
 
 PASS, DRIFT, FAIL = "PASS", "DRIFT", "FAIL"
-
-# An assertion counts as broken only if it fails in a clear majority of runs.
-# One bad draw out of k is noise, not a regression.
-BREAK_RATE = 0.5
 
 
 @dataclass
@@ -44,6 +41,11 @@ class Config:
     # measured separation between the two (see scripts/calibrate.py).
     suite_drift_threshold: float = 0.025
     systemic_judge_sample: int = 5
+    # Failing a build is a hypothesis test, not a point threshold. An assertion
+    # is broken only when the upper bound of its new pass-rate, at this
+    # confidence, sits `break_margin` below the rate the baseline held.
+    break_confidence: float = 0.95
+    break_margin: float = 0.2
     judge_enabled: bool = True
     confirm_reruns: bool = True
     assertions: dict = field(default_factory=dict)
@@ -110,13 +112,24 @@ def record(cfg: Config) -> dict:
     return snap
 
 
-def _broken(old_rates: dict, new_rates: dict) -> list[str]:
-    """Assertions the baseline satisfied every time and the candidate mostly fails."""
-    return [
-        name
-        for name, rate in new_rates.items()
-        if old_rates.get(name, 0.0) >= 0.99 and rate <= BREAK_RATE
-    ]
+def _broken(old_rates: dict, new_counts: dict[str, tuple[int, int]], cfg: Config) -> list[str]:
+    """Assertions the baseline always satisfied and the candidate now reliably fails.
+
+    "Reliably" is the whole difference between a regression and a bad draw. The
+    upper bound of the new pass-rate has to sit a clear margin below what the
+    baseline held -- so 2-of-3 unlucky runs is not enough evidence to fail a
+    build, while a genuine break at the same nominal rate over more runs is.
+    """
+    z = stats.z_for(cfg.break_confidence)
+    broken = []
+    for name, (passes, trials) in new_counts.items():
+        baseline_rate = old_rates.get(name, 0.0)
+        if baseline_rate < 0.99:
+            continue  # the baseline never held it; that is not a regression
+        _, upper = stats.wilson(passes, trials, z)
+        if upper < baseline_rate - cfg.break_margin:
+            broken.append(name)
+    return broken
 
 
 def check(cfg: Config, baseline: dict) -> dict:
@@ -140,13 +153,14 @@ def check(cfg: Config, baseline: dict) -> dict:
 
         old_rates = old.get("assert_rates", {})
         runs = list(new["runs"])
-        broken = _broken(old_rates, assertions.rate(runs, cfg.assertions))
+        broken = _broken(old_rates, assertions.counts(runs, cfg.assertions), cfg)
 
         # Re-sample before failing the build. Flake quarantine, not gut feel.
+        # The re-runs join the sample, so the interval tightens on real breaks.
         if broken and cfg.confirm_reruns:
             runs += _run_case(provider, new["prompt"], k, offset=k)
             report["confirm_reruns"] += k
-            broken = _broken(old_rates, assertions.rate(runs, cfg.assertions))
+            broken = _broken(old_rates, assertions.counts(runs, cfg.assertions), cfg)
 
         floor = old.get("noise_floor", 0.0)
         threshold = max(cfg.drift_floor, floor * cfg.drift_multiplier)

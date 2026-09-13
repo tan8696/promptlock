@@ -37,6 +37,10 @@ wave through, against 50 cases each.
 
 **Recall must stay 6/6. False positives must not exceed 1/10.**
 
+The suite currently scores **6/6 recall, 0/10 false positives, 100% precision**.
+The gate is 1/10 so there is headroom, but going 0/10 → 1/10 is a regression
+even though it passes: say so rather than letting it pass quietly.
+
 If a change lowers recall or raises false positives, **revert the change and
 report what you saw.** Do not tune thresholds, constants, or the case set to
 make the numbers come back. The benchmark measures the detector; editing the
@@ -73,10 +77,14 @@ LIMITATIONS.md              where the measurements stop being trustworthy
 
 promptlock/
   __init__.py       empty — package marker only
-  cli.py            argparse entry point: `record` | `check`; exit code is the CI gate
+  cli.py            argparse entry: `init` | `record` | `check`; exit code is the CI gate
+  discover.py       AST walk — finds call sites + prompt constants, scaffolds config.
+                    Static only: never imports or executes the scanned repo
+  stats.py          Wilson score interval + z_for(confidence). Pure, no imports
+                    from the rest of the package
   runner.py         verdict engine — owns run_suite/record/check, noise floors,
-                    confirmation re-runs, BREAK_RATE, suite-level systemic drift,
-                    and the Config dataclass (every tunable lives here)
+                    confirmation re-runs, the Wilson break rule, suite-level
+                    systemic drift, and the Config dataclass (every tunable lives here)
   providers.py      MockProvider (behavioural simulator, seeded) + AnthropicProvider
   store.py          baseline save/load + prompt fingerprint
   report.py         markdown (PR comment) + console rendering
