@@ -1,7 +1,7 @@
 # PromptLock — CI for prompts
 
 Your test suite catches broken code. Nothing catches a prompt edit that quietly
-stops returning parseable JSON on 23 of your 50 inputs.
+stops returning parseable JSON on half your inputs.
 
 PromptLock snapshots your LLM outputs on a known-good commit, then fails the
 pull request when a prompt, model, or parameter change makes them worse.
