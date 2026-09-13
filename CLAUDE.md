@@ -75,6 +75,9 @@ promptlock.yaml             config: target, cases, thresholds, assertions
 CLAUDE.md                   this file
 README.md                   the pitch and the results table
 LIMITATIONS.md              where the measurements stop being trustworthy
+DEMO.md                     how to record the 90-second demo
+SUBMISSION.md               Devpost copy + judging-criteria map
+SETUP.md                    first-run instructions for a fresh unzip
 
 promptlock/
   __init__.py       empty — package marker only
@@ -101,10 +104,14 @@ promptlock/
 examples/demo_app/  app.py (the target prompt) + cases.yaml (50 tickets)
 scripts/
   gen_cases.py      regenerates cases.yaml
-  benchmark.py      the acceptance gate — precision/recall vs a naive string diff
+  benchmark.py      the acceptance gate — precision/recall vs a naive string diff,
+                    exits 1 if recall < 6/6 or false positives > 1/10
   calibrate.py      measures the harmless/behavioural gap behind suite_drift_threshold
-  demo.sh           scripted walkthrough
-.github/workflows/  PR check + sticky comment
+  demo.sh           scripted walkthrough; restores the prompt via an EXIT trap
+tests/              pytest; also runnable standalone (python3 tests/test_x.py)
+  fixtures/         deliberately unrunnable samples for the AST walker to read
+.github/workflows/  promptlock.yml (PR check + sticky comment), test.yml (lint,
+                    pytest, coverage, benchmark gate)
 ```
 
 ## Ownership notes
@@ -121,9 +128,12 @@ scripts/
 ## Commands
 
 ```bash
+promptlock init --dry-run          # scan a repo for LLM call sites
 promptlock record                  # snapshot known-good behaviour
 promptlock check                   # exits 1 if anything regressed
-promptlock check --markdown report.md
+promptlock check --markdown report.md --html report.html
+pytest -q                          # 66 tests
+ruff check .                       # must stay clean
 python3 scripts/benchmark.py       # the gate
 ```
 
