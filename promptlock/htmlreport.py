@@ -187,7 +187,7 @@ def _scatter(cases: dict) -> str:
             f'font-size="10" fill="#8a929b">{top * frac:.3f}</text>'
         )
 
-    for i, (cid, c) in enumerate(items):
+    for i, (_cid, c) in enumerate(items):
         x, ty = x_of(i), y_of(c["threshold"])
         parts.append(
             f'<line x1="{x - 4:.1f}" y1="{ty:.1f}" x2="{x + 4:.1f}" y2="{ty:.1f}" '

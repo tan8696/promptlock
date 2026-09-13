@@ -26,6 +26,9 @@ BACKUP = os.path.join(tempfile.gettempdir(), "promptlock_app_backup.py")
 
 STRICT = "Respond with ONLY valid JSON. No prose, no markdown fence."
 
+# CI gate: recall must be perfect and false positives may not exceed this.
+MAX_FALSE_POSITIVES = 1
+
 # Prompt edits that genuinely degrade the output.
 REGRESSIONS = {
     "R1 drop-format-anchor": (STRICT, "Respond in JSON."),
@@ -70,9 +73,11 @@ MODEL_SWAP = {
 
 def patch(old: str, new: str) -> None:
     shutil.copy(BACKUP, APP)
-    s = open(APP).read()
-    assert old in s, f"anchor not found: {old!r}"
-    open(APP, "w").write(s.replace(old, new, 1))
+    with open(APP, encoding="utf-8") as f:
+        source = f.read()
+    assert old in source, f"anchor not found: {old!r}"
+    with open(APP, "w", encoding="utf-8") as f:
+        f.write(source.replace(old, new, 1))
 
 
 def tier_of(rep: dict, fired: bool) -> str:
@@ -97,7 +102,7 @@ def naive_fires(cfg: Config, baseline: dict) -> bool:
     return False
 
 
-def main() -> None:
+def main() -> int:
     # Windows consoles default to cp1252, which cannot encode the table glyphs.
     if hasattr(sys.stdout, "reconfigure"):
         sys.stdout.reconfigure(encoding="utf-8")
@@ -140,7 +145,7 @@ def main() -> None:
 
     print(f"\n{'':<4}{'variant':<26}{'PromptLock':<12}{'naive diff':<12}{'verdicts':<14}caught by")
     print("-" * 96)
-    for kind, name, pl, nv, s, tier, want in rows:
+    for _kind, name, pl, nv, s, tier, want in rows:
         mark = lambda fired: ("FIRE" if fired else "quiet")  # noqa: E731
         ok = "✓" if pl == want else "✗"
         print(
@@ -172,6 +177,22 @@ def main() -> None:
         print(f"{'model / params':<20} {right}/{len(swaps)} classified correctly")
     print("=" * 82)
 
+    # The CI gate. Tuning a threshold until the benchmark passes measures
+    # nothing, so this is the number a change has to survive.
+    tp, nr, fp, nh, _, _ = stats(2)
+    failures = []
+    if tp < nr:
+        failures.append(f"recall {tp}/{nr} below the required {nr}/{nr}")
+    if fp > MAX_FALSE_POSITIVES:
+        failures.append(f"false positives {fp}/{nh} above the allowed {MAX_FALSE_POSITIVES}/{nh}")
+
+    if failures:
+        print("\nGATE FAILED: " + "; ".join(failures))
+        return 1
+    print(f"\nGate passed: recall {tp}/{nr}, false positives {fp}/{nh} "
+          f"(limit {MAX_FALSE_POSITIVES}/{nh}).")
+    return 0
+
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())

@@ -149,10 +149,11 @@ class _Visitor(ast.NodeVisitor):
         for el in node.elts:
             if not isinstance(el, ast.Dict):
                 continue
-            for k, v in zip(el.keys, el.values):
-                if isinstance(k, ast.Constant) and k.value == "content":
-                    if found := self._resolve(v):
-                        return found
+            for k, v in zip(el.keys, el.values, strict=False):
+                if isinstance(k, ast.Constant) and k.value == "content" and (
+                    found := self._resolve(v)
+                ):
+                    return found
         return None
 
     def _template(self, node: ast.Call) -> str | None:
@@ -160,9 +161,8 @@ class _Visitor(ast.NodeVisitor):
             if kw.arg == "messages":
                 if found := self._from_messages(kw.value):
                     return found
-            elif kw.arg in ("prompt", "system", "input"):
-                if found := self._resolve(kw.value):
-                    return found
+            elif kw.arg in ("prompt", "system", "input") and (found := self._resolve(kw.value)):
+                return found
         for arg in node.args:
             if found := self._resolve(arg):
                 return found

@@ -6,6 +6,8 @@ on:
       - "examples/**"
       - "promptlock.yaml"
       - ".promptlock/**"
+      # The detector itself changes the verdicts, so it belongs in the gate.
+      - "promptlock/**"
 
 permissions:
   contents: read
@@ -19,17 +21,25 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+          cache: pip
 
       - run: pip install -e .
 
       # Offline by default. Set PROMPTLOCK_PROVIDER=anthropic and add
       # ANTHROPIC_API_KEY to run the suite against a real model.
       - name: promptlock check
-        id: check
-        run: promptlock check --markdown report.md --json report.json
+        run: promptlock check --markdown report.md --json report.json --html report.html
         env:
           PROMPTLOCK_PROVIDER: ${{ vars.PROMPTLOCK_PROVIDER || 'mock' }}
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+
+      # `check` writes the report before it exits non-zero, so a regression
+      # still comments. A crash (no baseline, bad config) writes nothing, and
+      # the comment step would then fail on a missing file -- say so instead.
+      - name: Ensure a report exists
+        if: always()
+        run: |
+          test -s report.md || printf '## PromptLock\n\n**Run failed before a report could be written.** See the job log.\n' > report.md
 
       - name: Comment on PR
         if: always()
@@ -42,4 +52,6 @@ jobs:
         if: always()
         with:
           name: promptlock-report
-          path: report.json
+          path: |
+            report.json
+            report.html

@@ -7,14 +7,55 @@ PromptLock snapshots your LLM outputs on a known-good commit, then fails the
 pull request when a prompt, model, or parameter change makes them worse.
 
 ```
-❌ 23 of 50 cases regressed.
+❌ 50 of 50 cases regressed.
 
-| Case   | Cause                      | Baseline                          | Now                              |
-|--------|----------------------------|-----------------------------------|----------------------------------|
-| t004   | `json_bare`, `key:summary` | {"category":"billing","urgency":… | Sure! {"category":"billing", …   |
+| Case   | Cause                             | Baseline                          | Now                              |
+|--------|-----------------------------------|-----------------------------------|----------------------------------|
+| t001   | `key:summary`                     | {"category":"billing","urgency":… | Here's the classification: ```j… |
+| t002   | `key:summary`, `nomatch:^(sure…)` | {"category":"billing","urgency":… | Sure! {"category":"billing", …   |
 ```
 
-That PR changed four words in a prompt. No reviewer catches this by reading a diff.
+That PR changed four words in a prompt — it dropped `summary` from the output
+and started leaking prose. No reviewer catches this by reading a diff.
+
+Every number in this README comes from a command in this repo. That one is
+`bash scripts/demo.sh`.
+
+## Does it work?
+
+6 prompt edits that genuinely degrade output, 10 a reviewer would wave through,
+3 model/parameter changes. 50 cases each. One command, no API key:
+
+```bash
+python3 scripts/benchmark.py
+```
+
+| Detector | Recall | False positives | Precision |
+|---|---|---|---|
+| Naive string diff | 6/6 (100%) | 10/10 (100%) | 38% |
+| **PromptLock** | **6/6 (100%)** | **0/10 (0%)** | **100%** |
+
+Both find every real regression. Only one is quiet enough to leave switched on.
+That gap is the product.
+
+## 30-second try it
+
+```bash
+pip install -e .
+promptlock record                      # snapshot known-good behaviour
+promptlock check                       # 50 pass · 0 drift · 0 fail
+
+# now break the prompt: in examples/demo_app/app.py, change
+#   "Respond with ONLY valid JSON. No prose, no markdown fence."
+# to
+#   "Respond in JSON. Keep it brief."
+
+promptlock check                       # 0 pass · 0 drift · 50 fail, exits 1
+promptlock check --html report.html    # open it — scatter, filters, diffs
+```
+
+No API key, no network, no account. The demo runs against a behavioural mock.
+Prefer it scripted? `bash scripts/demo.sh` does the same and restores the file.
 
 ---
 
@@ -89,19 +130,11 @@ spreadsheet with no quality number in it.
 on cases that already drifted, plus the top 5 when systemic drift fires. A no-op
 PR costs zero judge calls.
 
-## Results
+## Results in detail
 
-`python3 scripts/benchmark.py` — 6 prompt edits that genuinely degrade output,
-10 that a reviewer would wave through, and 3 model/parameter changes. 50 cases
-each, 19 variants, no API key required.
-
-| Detector | Recall | False positives | Precision |
-|---|---|---|---|
-| Naive string diff | 6/6 (100%) | 10/10 (100%) | 38% |
-| **PromptLock** | **6/6 (100%)** | **0/10 (0%)** | **100%** |
-
-Both detectors find every real regression. Only one is quiet enough to leave
-switched on.
+The headline table is [above](#does-it-work). `scripts/benchmark.py` also exits
+non-zero if recall drops below 6/6 or false positives rise above 1/10, so the
+detector cannot regress silently — that is the gate CI runs.
 
 The model/parameter group is scored separately, since two of its three variants
 *should* fire and one should not:

@@ -25,8 +25,11 @@ runs:
     - id: run
       shell: bash
       run: |
+        # Publish the path first: `check` exits non-zero on a regression, which
+        # is the case a consuming workflow most needs the report for.
+        echo "report=promptlock-report.md" >> "$GITHUB_OUTPUT"
         promptlock -c "${{ inputs.config }}" check \
           --markdown promptlock-report.md \
           --json promptlock-report.json \
+          --html promptlock-report.html \
           --fail-on "${{ inputs.fail-on }}"
-        echo "report=promptlock-report.md" >> "$GITHUB_OUTPUT"

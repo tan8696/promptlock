@@ -55,7 +55,7 @@ class Config:
     assertions: dict = field(default_factory=dict)
 
     @classmethod
-    def load(cls, path: str = "promptlock.yaml") -> "Config":
+    def load(cls, path: str = "promptlock.yaml") -> Config:
         with open(path) as f:
             raw = yaml.safe_load(f) or {}
         return cls(**{k: v for k, v in raw.items() if k in cls.__dataclass_fields__})

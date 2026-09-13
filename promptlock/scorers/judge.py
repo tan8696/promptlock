@@ -10,7 +10,6 @@ to the size of the change, not the size of the suite.
 
 from __future__ import annotations
 
-import json
 import re
 
 from .assertions import _extract_json

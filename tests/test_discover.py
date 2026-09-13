@@ -123,8 +123,61 @@ def test_empty_repo_still_scaffolds():
     assert "cases:" in text and "No call sites discovered" in text
 
 
+def test_init_dry_run_writes_nothing(capsys):
+    with tempfile.TemporaryDirectory() as root:
+        config = os.path.join(root, "promptlock.yaml")
+        assert discover.init(FIXTURES, dry_run=True, config_path=config) == 0
+        assert os.listdir(root) == [], "--dry-run must not write"
+    out = capsys.readouterr().out
+    assert "site(s)" in out and "nothing written" in out
+
+
+def test_init_scaffolds_config_and_cases(capsys):
+    with tempfile.TemporaryDirectory() as root:
+        config = os.path.join(root, "promptlock.yaml")
+        assert discover.init(FIXTURES, dry_run=False, config_path=config) == 0
+        written = sorted(os.listdir(root))
+        with open(config, encoding="utf-8") as f:
+            body = f.read()
+    assert written == ["cases.yaml", "promptlock.yaml"]
+    assert "cases: cases.yaml" in body
+    assert "site(s)" in capsys.readouterr().out
+
+
+def test_init_refuses_to_clobber_and_prints_a_diff(capsys):
+    with tempfile.TemporaryDirectory() as root:
+        config = os.path.join(root, "promptlock.yaml")
+        with open(config, encoding="utf-8", mode="w") as f:
+            f.write("target: mine:render\n")
+
+        discover.init(FIXTURES, dry_run=False, config_path=config)
+
+        with open(config, encoding="utf-8") as f:
+            assert f.read() == "target: mine:render\n", "original must survive"
+        assert os.path.exists(config + ".new")
+    assert "already exists" in capsys.readouterr().out
+
+
+def test_table_on_no_hits():
+    assert "No LLM call sites" in discover.table([])
+
+
+def test_unparseable_source_is_skipped_not_fatal():
+    with tempfile.TemporaryDirectory() as root:
+        broken = os.path.join(root, "broken.py")
+        with open(broken, "w", encoding="utf-8") as f:
+            f.write("def (((( oops\n")
+        assert discover.scan_file(broken) == []
+
+
 if __name__ == "__main__":
-    tests = [(n, f) for n, f in sorted(globals().items()) if n.startswith("test_")]
+    import inspect
+
+    # Tests taking a pytest fixture (capsys) need pytest; skip them standalone.
+    tests = [
+        (n, f) for n, f in sorted(globals().items())
+        if n.startswith("test_") and callable(f) and not inspect.signature(f).parameters
+    ]
     failed = []
     for name, fn in tests:
         try:

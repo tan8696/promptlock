@@ -1,0 +1,42 @@
+name: tests
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # The floor declared in pyproject, and a current release.
+        python-version: ["3.10", "3.12"]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+
+      - name: Install
+        run: pip install -e ".[dev]"
+
+      - name: Lint
+        run: ruff check .
+
+      - name: Unit tests
+        run: coverage run -m pytest -q
+
+      - name: Coverage
+        run: coverage report
+
+      # The acceptance gate. Exits 1 if recall drops below 6/6 or false
+      # positives rise above 1/10, so the detector cannot regress silently.
+      - name: Detector benchmark
+        run: python scripts/benchmark.py

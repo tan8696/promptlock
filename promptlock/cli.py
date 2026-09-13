@@ -5,9 +5,8 @@ import json
 import sys
 
 from . import discover as discover_mod
-from . import htmlreport
+from . import htmlreport, store
 from . import report as report_mod
-from . import store
 from .runner import Config, check, record
 
 
