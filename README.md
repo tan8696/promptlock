@@ -96,6 +96,7 @@ The remaining false positive (`H10 reorder-tail`) is documented in
 ```bash
 pip install -e .
 
+promptlock init          # scan the repo for LLM call sites, scaffold a config
 promptlock record        # snapshot known-good behaviour on main
 # ...edit examples/demo_app/app.py PROMPT...
 promptlock check         # exits 1 if anything regressed
@@ -124,7 +125,8 @@ promptlock.yaml            config: target, cases, thresholds, assertions
 .promptlock/baseline.json  the snapshot — committed to git, reviewable in a PR diff
 
 promptlock/
-  cli.py          record | check
+  cli.py          init | record | check
+  discover.py     AST walk: finds LLM call sites + prompt constants, scaffolds config
   runner.py       verdict engine: noise floors, confirmation re-runs
   providers.py    mock behavioural simulator + Anthropic
   store.py        baseline snapshot + prompt fingerprint

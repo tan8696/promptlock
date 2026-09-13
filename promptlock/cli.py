@@ -4,15 +4,24 @@ import argparse
 import json
 import sys
 
+from . import discover as discover_mod
 from . import report as report_mod
 from . import store
 from .runner import Config, check, record
 
 
 def main(argv=None) -> int:
+    # Windows consoles default to cp1252, which cannot encode the report glyphs.
+    if hasattr(sys.stdout, "reconfigure"):
+        sys.stdout.reconfigure(encoding="utf-8")
+
     p = argparse.ArgumentParser(prog="promptlock", description="CI for prompts.")
     p.add_argument("-c", "--config", default="promptlock.yaml")
     sub = p.add_subparsers(dest="cmd", required=True)
+
+    ini = sub.add_parser("init", help="scan the repo for LLM call sites and scaffold a config")
+    ini.add_argument("--root", default=".", help="directory to scan (default: .)")
+    ini.add_argument("--dry-run", action="store_true", help="print what was found, write nothing")
 
     sub.add_parser("record", help="snapshot current outputs as the known-good baseline")
 
@@ -22,6 +31,11 @@ def main(argv=None) -> int:
     chk.add_argument("--fail-on", choices=["fail", "drift"], default="fail")
 
     args = p.parse_args(argv)
+
+    # init runs before any config exists, so it must not load one.
+    if args.cmd == "init":
+        return discover_mod.init(args.root, dry_run=args.dry_run, config_path=args.config)
+
     cfg = Config.load(args.config)
 
     if args.cmd == "record":

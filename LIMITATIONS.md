@@ -53,12 +53,23 @@ It does not grade summary quality. The real judge
 (`scorers/judge.py:compare`) has no such gap — it is the position-swapped
 rubric prompt, and it activates automatically when a real provider is configured.
 
-## Discovery is manual
+## Discovery is static, and the guessed target usually needs correcting
 
-There is no AST scan of your repo for LLM call sites. You point `target:` at a
-callable that renders a prompt and write `cases.yaml` yourself. Auto-discovery
-was cut for time; the roadmap entry is a `promptlock init` that walks the AST
-for `messages=` blocks and generates case stubs.
+`promptlock init` walks the AST (`promptlock/discover.py`); it never imports or
+executes your code, so it is safe to point at an unfamiliar repo. The cost of
+that safety:
+
+- **Runtime-assembled prompts are invisible.** A template resolves only if it is
+  a module-level string constant or a literal at the call site. Prompts built by
+  concatenation, f-strings, config loads, or a database read show as `-`.
+- **The scaffolded `target:` is a guess.** init names the function *enclosing*
+  the first call site, which is usually the function that calls the model, not
+  the `callable(case_input) -> prompt` renderer the config wants. The generated
+  file says so in a TODO, but it will not run until a human fixes it.
+- **`.complete(` is matched by name alone**, so unrelated methods with that name
+  are reported as call sites.
+
+Discovery scaffolds a starting point. It does not produce a runnable suite.
 
 ## Python only
 

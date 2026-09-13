@@ -13,6 +13,7 @@ import importlib
 import os
 import shutil
 import sys
+import tempfile
 
 sys.path.insert(0, os.getcwd())
 
@@ -20,7 +21,7 @@ from promptlock import store  # noqa: E402
 from promptlock.runner import Config, check, record, run_suite  # noqa: E402
 
 APP = "examples/demo_app/app.py"
-BACKUP = "/tmp/promptlock_app_backup.py"
+BACKUP = os.path.join(tempfile.gettempdir(), "promptlock_app_backup.py")
 
 STRICT = "Respond with ONLY valid JSON. No prose, no markdown fence."
 
@@ -72,6 +73,10 @@ def naive_fires(cfg: Config, baseline: dict) -> bool:
 
 
 def main() -> None:
+    # Windows consoles default to cp1252, which cannot encode the table glyphs.
+    if hasattr(sys.stdout, "reconfigure"):
+        sys.stdout.reconfigure(encoding="utf-8")
+
     shutil.copy(APP, BACKUP)
     cfg = Config.load("promptlock.yaml")
 
