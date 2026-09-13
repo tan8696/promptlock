@@ -5,6 +5,7 @@ import json
 import sys
 
 from . import discover as discover_mod
+from . import htmlreport
 from . import report as report_mod
 from . import store
 from .runner import Config, check, record
@@ -27,6 +28,7 @@ def main(argv=None) -> int:
 
     chk = sub.add_parser("check", help="compare current outputs against the baseline")
     chk.add_argument("--markdown", metavar="PATH", help="write a PR-ready markdown report")
+    chk.add_argument("--html", metavar="PATH", help="write a self-contained HTML report")
     chk.add_argument("--json", metavar="PATH", help="write the raw report")
     chk.add_argument("--fail-on", choices=["fail", "drift"], default="fail")
 
@@ -51,8 +53,11 @@ def main(argv=None) -> int:
     print(report_mod.console(rep))
 
     if args.markdown:
-        with open(args.markdown, "w") as f:
+        with open(args.markdown, "w", encoding="utf-8") as f:
             f.write(report_mod.markdown(rep))
+    if args.html:
+        with open(args.html, "w", encoding="utf-8") as f:
+            f.write(htmlreport.render(rep))
     if args.json:
         with open(args.json, "w") as f:
             json.dump(rep, f, indent=2)

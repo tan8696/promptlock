@@ -132,7 +132,14 @@ promptlock init          # scan the repo for LLM call sites, scaffold a config
 promptlock record        # snapshot known-good behaviour on main
 # ...edit examples/demo_app/app.py PROMPT...
 promptlock check         # exits 1 if anything regressed
+promptlock check --html report.html   # one self-contained file, opens from file://
 ```
+
+The HTML report is a single file with no CDN, no fonts, and no libraries: a
+drift scatter with every case's own threshold drawn beside it, a filterable
+case list, and a character-level diff of baseline vs current. Expansion is
+native `<details>` and the diff is computed in Python, so it still works with
+JavaScript disabled — JS only adds the filter buttons.
 
 Try it:
 
@@ -162,7 +169,9 @@ promptlock/
   runner.py       verdict engine: noise floors, confirmation re-runs
   providers.py    mock behavioural simulator + Anthropic
   store.py        baseline snapshot + prompt fingerprint
+  stats.py        Wilson score interval — evidence, not a point threshold
   report.py       markdown (PR comment) + console
+  htmlreport.py   self-contained HTML report: SVG scatter, filters, char diff
   scorers/
     assertions.py deterministic — schema, keys, enums, regex, latency, cost
     drift.py      hashed char n-gram embeddings, dependency-free

@@ -90,6 +90,9 @@ promptlock/
                     + AnthropicProvider. Owns model-tier behaviour and PRICE_BY_MODEL
   store.py          baseline save/load + prompt fingerprint
   report.py         markdown (PR comment) + console rendering
+  htmlreport.py     self-contained HTML: inline CSS/JS, SVG scatter, char diff.
+                    Must stay dependency-free and usable with JS disabled —
+                    expansion is native <details>, the diff is computed in Python
   scorers/
     assertions.py   evaluate() per run, rate() per case — the only free FAIL
     drift.py        hashed char 4-gram embedding, cosine, self/cross distance
