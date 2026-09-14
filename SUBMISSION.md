@@ -147,6 +147,13 @@ in this README can be trusted.
   a decision teams currently make in a spreadsheet with no quality number in it.
 
 **Presentation**
+- **Live demo: https://promptlock-jj6y.vercel.app** — the landing page, two real
+  reports, and an interactive explorer over all 19 benchmark variants. Judges can
+  click `H10 reorder-tail` (the false positive we fixed) and see it correctly
+  stay quiet, or `R6 urgency-inflation` and see a regression that breaks zero
+  assertions and is caught only by the suite drift gate plus the judge.
+  Built by `scripts/build_site.py` from real runs — the variant definitions are
+  imported from `scripts/benchmark.py`, so the site cannot disagree with the gate.
 - `scripts/demo.sh` — safe on a clean clone, restores the prompt via an EXIT
   trap, six beats sized for recording.
 - `DEMO.md` — exact terminal size, font size, and a spoken line per beat timed

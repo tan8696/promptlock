@@ -4,6 +4,10 @@
 or parameter change silently makes your LLM outputs worse.</p>
 
 <p align="center">
+  <a href="https://promptlock-jj6y.vercel.app/explore.html"><strong>▶ Live demo — explore all 19 benchmark variants</strong></a>
+</p>
+
+<p align="center">
   <a href="https://github.com/tan8696/promptlock/actions/workflows/test.yml"><img alt="tests" src="https://github.com/tan8696/promptlock/actions/workflows/test.yml/badge.svg"></a>
   <img alt="python" src="https://img.shields.io/badge/python-3.10%2B-blue">
   <img alt="dependencies" src="https://img.shields.io/badge/dependencies-PyYAML%20only-brightgreen">
@@ -32,6 +36,12 @@ and started leaking prose. No reviewer catches that by reading a diff.
 That one is `bash scripts/demo.sh`.
 
 ## Does it work?
+
+**Poke at it yourself:
+[every variant, interactive](https://promptlock-jj6y.vercel.app/explore.html)** —
+pick any of the 19 changes and see what PromptLock decided, which signal caught
+it, and the character-level diff of the case that broke. Real precomputed output
+from the real detector, not a mockup.
 
 6 prompt edits that genuinely degrade output, 10 a reviewer would wave through,
 3 model/parameter changes. 50 cases each. One command, no API key:
