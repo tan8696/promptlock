@@ -16,6 +16,8 @@ so the site can never disagree with the acceptance gate.
 
 from __future__ import annotations
 
+import glob
+import hashlib
 import importlib
 import json
 import os
@@ -33,6 +35,36 @@ from promptlock.runner import Config, check  # noqa: E402
 
 OUT = "public"
 SITE = "https://promptlock-jj6y.vercel.app"
+MANIFEST = os.path.join(OUT, "build-manifest.json")
+
+# Everything the generated pages are derived from. Change any of these without
+# rebuilding and the live demo shows results the code no longer produces.
+INPUTS = [
+    "promptlock.yaml",
+    "scripts/build_site.py",
+    "scripts/benchmark.py",
+    "examples/demo_app/app.py",
+    "examples/demo_app/cases.yaml",
+    ".promptlock/baseline.json",
+]
+
+
+def _inputs_fingerprint() -> str:
+    """Hash of the sources the site is built from.
+
+    Normalised to LF and hashed per path, so it is identical on every platform.
+    Deliberately not a hash of the *output*: drift values differ in the fourth
+    decimal between libm implementations, so byte-comparing generated pages
+    across platforms tests the C library, not staleness (see LIMITATIONS.md).
+    """
+    paths = sorted(INPUTS + glob.glob("promptlock/**/*.py", recursive=True))
+    digest = hashlib.sha256()
+    for path in paths:
+        with open(path, encoding="utf-8") as f:  # universal newlines -> \n
+            body = f.read()
+        digest.update(path.replace(os.sep, "/").encode())
+        digest.update(hashlib.sha256(body.encode()).digest())
+    return digest.hexdigest()
 
 SHARED_CSS = """
 :root {
@@ -422,9 +454,34 @@ def collect(cfg: Config, baseline: dict) -> list[dict]:
     return rows
 
 
+def check_fresh() -> int:
+    """Was the committed site built from the code that is here now?"""
+    current = _inputs_fingerprint()
+    if not os.path.exists(MANIFEST):
+        print(f"::error::{MANIFEST} is missing. Run: python3 scripts/build_site.py")
+        return 1
+
+    with open(MANIFEST, encoding="utf-8") as f:
+        recorded = json.load(f).get("inputs_sha256")
+
+    if recorded != current:
+        print("::error::The demo site is stale: it was built from different "
+              "sources than the ones in this commit. "
+              "Run: python3 scripts/build_site.py && python3 scripts/make_docs_svg.py, "
+              "then commit public/ and docs/.")
+        print(f"  recorded {recorded}\n  current  {current}")
+        return 1
+
+    print(f"demo site is current ({current[:12]})")
+    return 0
+
+
 def main() -> int:
     if hasattr(sys.stdout, "reconfigure"):
         sys.stdout.reconfigure(encoding="utf-8")
+
+    if "--check" in sys.argv[1:]:
+        return check_fresh()
 
     cfg = Config.load("promptlock.yaml")
     baseline = store.load()
@@ -453,9 +510,25 @@ def main() -> int:
     with open(os.path.join(OUT, "index.html"), "w", encoding="utf-8") as f:
         f.write(LANDING.replace("__CSS__", SHARED_CSS))
 
+    # Written last: the fingerprint covers the sources, so it is only valid
+    # once everything built from them is on disk.
+    with open(MANIFEST, "w", encoding="utf-8") as f:
+        json.dump(
+            {
+                "inputs_sha256": _inputs_fingerprint(),
+                "variants": len(rows),
+                "generated_by": "scripts/build_site.py",
+            },
+            f,
+            indent=2,
+            sort_keys=True,
+        )
+        f.write("\n")
+
     correct = sum(1 for r in rows if r["fired"] == r["expected"])
     print(f"\n  explore.html  {len(rows)} variants, {correct}/{len(rows)} correct")
     print(f"  index.html    landing page  ({SITE})")
+    print(f"  {MANIFEST}  freshness fingerprint")
     return 0
 
 

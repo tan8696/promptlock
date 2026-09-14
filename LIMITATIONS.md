@@ -98,6 +98,32 @@ is not built.
 - The noise floor is measured once, at record time. A model that gets noisier
   over time will not be re-profiled until you re-record.
 
+## Drift is not bit-reproducible across platforms
+
+`scorers/drift.py` calls `math.log1p`, which is a C library function, and libm
+implementations differ by an ULP. Drift therefore differs in about the fourth
+decimal between platforms, and a case sitting exactly on its threshold can land
+on either side.
+
+Measured, not theorised. The same commit, same Python, same seeded mock, on the
+`M1 sonnet → haiku` variant:
+
+| | PASS | DRIFT | FAIL |
+|---|---|---|---|
+| Windows | 43 | 1 | 6 |
+| Linux | 44 | 0 | 6 |
+
+What this does **not** affect: **FAIL** counts were identical, and the full
+benchmark gate (6/6 recall, 0/10 false positives, 3/3 model/params) passes on
+both. Build-failing verdicts are stable, because a FAIL needs an assertion to
+break with interval evidence or the judge to agree in both orderings — neither
+is decided by a fourth-decimal difference.
+
+What it does affect: the **PASS vs DRIFT** split on a borderline case, and any
+attempt to compare generated reports byte-for-byte across machines. CI checks
+that the demo site was built from the current sources rather than diffing the
+generated HTML, for exactly this reason.
+
 ## Not handled
 
 Multi-turn conversations, tool-calling traces, streaming outputs, image inputs,
