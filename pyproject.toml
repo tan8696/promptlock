@@ -2,8 +2,32 @@
 name = "promptlock"
 version = "0.1.0"
 description = "CI for prompts: fail the PR when a prompt or model change silently degrades your LLM outputs."
+readme = "README.md"
 requires-python = ">=3.10"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{ name = "tan8696" }]
+keywords = ["llm", "prompt", "testing", "ci", "regression", "evaluation", "anthropic"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Software Development :: Testing",
+    "Topic :: Software Development :: Quality Assurance",
+    "Typing :: Typed",
+]
 dependencies = ["PyYAML>=6.0"]
+
+[project.urls]
+Homepage = "https://github.com/tan8696/promptlock"
+Repository = "https://github.com/tan8696/promptlock"
+Issues = "https://github.com/tan8696/promptlock/issues"
+Changelog = "https://github.com/tan8696/promptlock/releases"
 
 [project.optional-dependencies]
 anthropic = ["anthropic>=0.40"]
@@ -13,7 +37,8 @@ dev = ["pytest>=8", "ruff>=0.6", "coverage>=7"]
 promptlock = "promptlock.cli:main"
 
 [build-system]
-requires = ["setuptools>=68"]
+# 77+ for PEP 639 SPDX `license` / `license-files`.
+requires = ["setuptools>=77"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools.packages.find]
