@@ -48,6 +48,58 @@ def test_missing_baseline_exits_with_an_instruction():
     assert "promptlock record" in str(excinfo.value)
 
 
+def test_rerecording_identical_behaviour_produces_no_diff():
+    """The baseline is committed. A no-op record must not churn the file.
+
+    Otherwise every run restamps recorded_at, and "what changed in this PR?" --
+    the question a committed baseline exists to answer -- gets buried.
+    """
+    with tempfile.TemporaryDirectory() as root:
+        path = os.path.join(root, "baseline.json")
+        store.save(dict(SNAPSHOT), path)
+        with open(path, encoding="utf-8") as f:
+            first = f.read()
+
+        store.save(dict(SNAPSHOT), path)
+        with open(path, encoding="utf-8") as f:
+            second = f.read()
+
+    assert first == second, "re-recording identical content must be byte-identical"
+
+
+def test_changed_behaviour_restamps_recorded_at():
+    with tempfile.TemporaryDirectory() as root:
+        path = os.path.join(root, "baseline.json")
+        store.save(dict(SNAPSHOT), path)
+        before = store.load(path)["recorded_at"]
+
+        changed = dict(SNAPSHOT)
+        changed["cases"] = {"t001": {"runs": [{"text": "different", "cost_usd": 0.002}]}}
+        store.save(changed, path)
+        after = store.load(path)
+
+    assert after["recorded_at"] != before, "real changes must restamp"
+    assert after["cases"]["t001"]["runs"][0]["text"] == "different"
+
+
+def test_save_does_not_mutate_the_callers_dict():
+    snapshot = dict(SNAPSHOT)
+    with tempfile.TemporaryDirectory() as root:
+        store.save(snapshot, os.path.join(root, "baseline.json"))
+    assert "recorded_at" not in snapshot
+
+
+def test_save_works_with_no_directory_component():
+    previous = os.getcwd()
+    with tempfile.TemporaryDirectory() as root:
+        try:
+            os.chdir(root)
+            store.save(dict(SNAPSHOT), "baseline.json")
+            assert os.path.exists("baseline.json")
+        finally:
+            os.chdir(previous)
+
+
 def test_fingerprint_is_stable_and_sensitive():
     base = store.fingerprint("PROMPT", "mock", {"k": 5})
     assert base == store.fingerprint("PROMPT", "mock", {"k": 5}), "must be deterministic"

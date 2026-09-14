@@ -51,13 +51,20 @@ jobs:
       - name: Demo site and docs are up to date
         if: matrix.python-version == '3.12'
         run: |
+          # The baseline is checked separately: `record` now preserves
+          # recorded_at when nothing else changed, so any diff here means the
+          # recorded behaviour genuinely differs on this runner.
+          if ! git diff --quiet -- .promptlock; then
+            echo "::error::Baseline changed on this runner: $(git diff --stat -- .promptlock | tr '\n' ' ')"
+          fi
+
           python scripts/build_site.py
           python scripts/make_docs_svg.py
-          # Scoped to the generated directories on purpose: the benchmark step
-          # above re-records the baseline, which restamps recorded_at, so an
-          # unscoped diff fails on a timestamp that has nothing to do with
-          # whether the site is stale.
-          if ! git diff --exit-code -- public docs; then
-            echo "::error::Generated output is stale. Run: python3 scripts/build_site.py && python3 scripts/make_docs_svg.py, then commit."
+
+          if ! git diff --quiet -- public docs; then
+            echo "::error::Generated output is stale: $(git diff --stat -- public docs | tr '\n' ' ')"
+            echo "::error::First differing lines: $(git diff -U0 -- public docs | grep -E '^[+-][^+-]' | head -4 | cut -c1-160 | tr '\n' ' ')"
+            echo "Run: python3 scripts/build_site.py && python3 scripts/make_docs_svg.py, then commit."
+            git diff -- public docs | head -60
             exit 1
           fi
