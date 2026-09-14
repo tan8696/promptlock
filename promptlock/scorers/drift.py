@@ -31,7 +31,10 @@ def cosine(a: list[float], b: list[float]) -> float:
 
 
 def distance(a: str, b: str) -> float:
-    return 1.0 - cosine(embed(a), embed(b))
+    # Clamped: cosine sums DIM floats, so identical texts can land an ULP above
+    # 1.0 and yield -1e-17 -- which reports as a drift of "-0.0" and makes the
+    # generated site differ between interpreters. Distance is never negative.
+    return max(0.0, 1.0 - cosine(embed(a), embed(b)))
 
 
 def self_distance(texts: list[str]) -> float:

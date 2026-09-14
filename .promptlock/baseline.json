@@ -512,7 +512,7 @@
         "category": "billing",
         "urgency": "low"
       },
-      "noise_floor": -0.0,
+      "noise_floor": 0.0,
       "prompt": "You are a support triage assistant.\n\nClassify the ticket below.\n\n<ticket>\nDo you support payment by bank transfer instead of card?\n</ticket>\n\nReturn category (one of: billing, bug, feature_request, account, other),\nurgency (one of: low, medium, high), and a one-line summary.\n\nRespond with ONLY valid JSON. No prose, no markdown fence.\n",
       "runs": [
         {
@@ -1136,7 +1136,7 @@
         "category": "feature_request",
         "urgency": "low"
       },
-      "noise_floor": -0.0,
+      "noise_floor": 0.0,
       "prompt": "You are a support triage assistant.\n\nClassify the ticket below.\n\n<ticket>\nPlease add support for SSO with Okta.\n</ticket>\n\nReturn category (one of: billing, bug, feature_request, account, other),\nurgency (one of: low, medium, high), and a one-line summary.\n\nRespond with ONLY valid JSON. No prose, no markdown fence.\n",
       "runs": [
         {
@@ -1344,7 +1344,7 @@
         "category": "feature_request",
         "urgency": "low"
       },
-      "noise_floor": -0.0,
+      "noise_floor": 0.0,
       "prompt": "You are a support triage assistant.\n\nClassify the ticket below.\n\n<ticket>\nCan you add a Slack integration for notifications?\n</ticket>\n\nReturn category (one of: billing, bug, feature_request, account, other),\nurgency (one of: low, medium, high), and a one-line summary.\n\nRespond with ONLY valid JSON. No prose, no markdown fence.\n",
       "runs": [
         {
@@ -1656,7 +1656,7 @@
         "category": "account",
         "urgency": "low"
       },
-      "noise_floor": -0.0,
+      "noise_floor": 0.0,
       "prompt": "You are a support triage assistant.\n\nClassify the ticket below.\n\n<ticket>\nPlease delete my account and all associated data.\n</ticket>\n\nReturn category (one of: billing, bug, feature_request, account, other),\nurgency (one of: low, medium, high), and a one-line summary.\n\nRespond with ONLY valid JSON. No prose, no markdown fence.\n",
       "runs": [
         {
@@ -2176,7 +2176,7 @@
         "category": "other",
         "urgency": "low"
       },
-      "noise_floor": -0.0,
+      "noise_floor": 0.0,
       "prompt": "You are a support triage assistant.\n\nClassify the ticket below.\n\n<ticket>\nIs there a student discount available?\n</ticket>\n\nReturn category (one of: billing, bug, feature_request, account, other),\nurgency (one of: low, medium, high), and a one-line summary.\n\nRespond with ONLY valid JSON. No prose, no markdown fence.\n",
       "runs": [
         {
@@ -2636,6 +2636,6 @@
     "top_p": 1.0
   },
   "provider": "mock",
-  "recorded_at": "2026-09-13T12:38:55.598989+00:00",
+  "recorded_at": "2026-09-14T09:12:15.958856+00:00",
   "runs_per_case": 5
 }

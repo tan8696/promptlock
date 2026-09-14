@@ -87,10 +87,18 @@ def test_counts_on_no_runs_is_empty():
 # -- drift -------------------------------------------------------------------
 
 def test_self_distance_of_identical_texts_is_zero():
-    # Not `== 0.0`: cosine() sums 512 floats, and the summation lands within an
-    # ULP of 1.0 rather than exactly on it -- which way depends on the Python
-    # version. 1e-12 is still eleven orders of magnitude below drift_floor.
-    assert drift.self_distance(["same text", "same text", "same text"]) < 1e-12
+    assert drift.self_distance(["same text", "same text", "same text"]) == 0.0
+
+
+def test_distance_is_never_negative():
+    """cosine() can land an ULP above 1.0; a negative distance must not escape.
+
+    It is cosmetically ugly (reports render "drift=-0.0") and it made the
+    generated site differ between Python versions.
+    """
+    for text in ("same text", "{}", "a", "x" * 500, '{"category": "billing"}'):
+        assert drift.distance(text, text) == 0.0, text
+        assert not str(drift.distance(text, text)).startswith("-")
 
 
 def test_self_distance_of_one_or_none_is_zero():
