@@ -30,11 +30,17 @@ def cosine(a: list[float], b: list[float]) -> float:
     return sum(x * y for x, y in zip(a, b, strict=True))
 
 
+# cosine() sums DIM floats, so identical texts land within an ULP of 1.0 rather
+# than exactly on it -- and which side of 1.0 depends on the interpreter. Left
+# alone that surfaces as a drift of "-0.0" in reports and makes generated output
+# differ between Python versions. Anything this small is noise, not distance:
+# it is ten orders of magnitude below the smallest usable drift_floor.
+EPSILON = 1e-12
+
+
 def distance(a: str, b: str) -> float:
-    # Clamped: cosine sums DIM floats, so identical texts can land an ULP above
-    # 1.0 and yield -1e-17 -- which reports as a drift of "-0.0" and makes the
-    # generated site differ between interpreters. Distance is never negative.
-    return max(0.0, 1.0 - cosine(embed(a), embed(b)))
+    d = 1.0 - cosine(embed(a), embed(b))
+    return 0.0 if d < EPSILON else d
 
 
 def self_distance(texts: list[str]) -> float:
