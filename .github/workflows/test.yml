@@ -63,8 +63,10 @@ jobs:
 
           if ! git diff --quiet -- public docs; then
             echo "::error::Generated output is stale: $(git diff --stat -- public docs | tr '\n' ' ')"
-            echo "::error::First differing lines: $(git diff -U0 -- public docs | grep -E '^[+-][^+-]' | head -4 | cut -c1-160 | tr '\n' ' ')"
+
+            # These files are single enormous lines, so a line diff says
+            # nothing. This reports the first differing character with context.
+            python scripts/show_generated_diff.py public docs || true
             echo "Run: python3 scripts/build_site.py && python3 scripts/make_docs_svg.py, then commit."
-            git diff -- public docs | head -60
             exit 1
           fi
