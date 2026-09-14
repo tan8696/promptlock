@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PromptLock — CI for prompts</title>
+<style>
+:root {
+  --ink:#14161a; --muted:#5c6570; --line:#e2e6ea; --bg:#fff; --panel:#f7f8fa;
+  --accent:#1a7f5a;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --ink:#e7ebf0; --muted:#97a1ad; --line:#2b313a; --bg:#14171c;
+    --panel:#1b1f26; --accent:#56cfa1;
+  }
+}
+* { box-sizing:border-box; }
+body {
+  margin:0; padding:56px 24px 80px; background:var(--bg); color:var(--ink);
+  font:15px/1.6 ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+}
+.wrap { max-width:760px; margin:0 auto; }
+h1 { font-size:38px; margin:0 0 6px; letter-spacing:-0.02em; }
+.tag { font-size:18px; color:var(--muted); margin:0 0 28px; }
+h2 { font-size:15px; text-transform:uppercase; letter-spacing:.05em;
+     color:var(--muted); margin:40px 0 12px; }
+a { color:var(--accent); }
+table { border-collapse:collapse; width:100%; margin:0 0 12px; font-size:14px; }
+th, td { text-align:left; padding:9px 10px; border-bottom:1px solid var(--line); }
+th { color:var(--muted); font-weight:600; font-size:12px;
+     text-transform:uppercase; letter-spacing:.04em; }
+td.n { font-variant-numeric:tabular-nums; }
+.win { color:var(--accent); font-weight:700; }
+.cta { display:flex; flex-wrap:wrap; gap:10px; margin:14px 0 0; }
+.cta a {
+  display:block; padding:13px 18px; border:1px solid var(--line);
+  border-radius:10px; background:var(--panel); text-decoration:none;
+  color:var(--ink); flex:1 1 240px;
+}
+.cta a:hover { border-color:var(--accent); }
+.cta strong { display:block; font-size:15px; color:var(--accent); }
+.cta span { color:var(--muted); font-size:13px; }
+pre {
+  background:var(--panel); border:1px solid var(--line); border-radius:8px;
+  padding:14px; overflow-x:auto; font-size:13px;
+  font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+p { margin:0 0 14px; }
+.note { color:var(--muted); font-size:13px; }
+footer { margin-top:48px; color:var(--muted); font-size:13px;
+          border-top:1px solid var(--line); padding-top:18px; }
+</style>
+</head><body><div class="wrap">
+
+<h1>PromptLock</h1>
+<p class="tag"><strong>CI for prompts.</strong> Fail the pull request when a
+prompt, model, or parameter change silently makes your LLM outputs worse.</p>
+
+<p>Your test suite catches broken code. Nothing catches a prompt edit that
+quietly stops returning parseable JSON on half your inputs. Detecting that
+output <em>changed</em> is trivial — LLMs are stochastic, so any tool that diffs
+strings fires on whitespace and gets muted in a week. Detecting that it got
+<em>worse</em> is the product.</p>
+
+<h2>See it</h2>
+<div class="cta">
+  <a href="report-fail.html"><strong>A failing report &rarr;</strong>
+  <span>Sonnet downgraded to Haiku: 6 of 50 cases regressed, 73% cheaper</span></a>
+  <a href="report-pass.html"><strong>A clean report &rarr;</strong>
+  <span>All 50 cases hold — what a quiet PR looks like</span></a>
+</div>
+<p class="note" style="margin-top:14px">Both are real output from
+<code>promptlock check --html</code>. Click any row to expand a character-level
+diff of baseline vs current.</p>
+
+<h2>Does it work?</h2>
+<p>6 prompt edits that genuinely degrade output, 10 a reviewer would wave
+through, 3 model/parameter changes. 50 cases each.</p>
+<table>
+  <tr><th>Detector</th><th>Recall</th><th>False positives</th><th>Precision</th></tr>
+  <tr><td>Naive string diff</td><td class="n">6/6</td><td class="n">10/10</td>
+      <td class="n">38%</td></tr>
+  <tr><td class="win">PromptLock</td><td class="n win">6/6</td>
+      <td class="n win">0/10</td><td class="n win">100%</td></tr>
+</table>
+<p>Both find every real regression. Only one is quiet enough to leave switched
+on. That gap is the entire product.</p>
+
+<h2>Try it</h2>
+<pre>git clone https://github.com/tan8696/promptlock
+cd promptlock &amp;&amp; pip install -e .
+
+promptlock record     # snapshot known-good behaviour
+promptlock check      # 50 pass · 0 drift · 0 fail
+python3 scripts/benchmark.py</pre>
+<p>No API key, no network, no account — the demo runs against a behavioural
+mock.</p>
+
+<footer>
+PromptLock is a command-line tool and GitHub Action, not a hosted service.
+This page is a static preview of its report.
+&nbsp;·&nbsp; <a href="https://github.com/tan8696/promptlock">Source on GitHub</a>
+&nbsp;·&nbsp; MIT
+</footer>
+
+</div></body></html>
